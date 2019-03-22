@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element extends="x_302527_ai_search_source" label="script source" max_length="40" name="x_302527_ai_search_script_source" type="collection">
+        <element label="script" max_length="8000" name="script" type="script"/>
+    </element>
+</database>

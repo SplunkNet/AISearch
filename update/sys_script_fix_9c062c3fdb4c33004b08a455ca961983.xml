@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_fix">
+    <sys_script_fix action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <before>false</before>
+        <description>create a default search config when installing the application :&#13;
+default search will include :&#13;
+incident table&#13;
+contextual search script</description>
+        <flush_cache>false</flush_cache>
+        <name>setup search sonfig</name>
+        <record_for_rollback>false</record_for_rollback>
+        <run_once>true</run_once>
+        <script><![CDATA[var incident_record = new GlideRecord('x_302527_ai_search_table_source');
+incident_record.initialize();
+incident_record.name = 'incident source';
+incident_record.u_table_name = 'incident';
+var s = '<div><h2>result from table source incident</h2></div>';
+s=s.split('<').join('&lt;');
+s=s.split('>').join('&gt;');
+incident_record.template = '<p>'+s+'</p>';
+incident_record.u_columns = 'ecdbdf75dd0323007850f2ee37a03989,2cdbdf75dd0323007850f2ee37a03997';
+incident_record.u_frequency = 1;
+incident_record.u_index_time = new GlideDateTime();
+incident_record.insert();
+var incident_record_id = incident_record.insert();
+
+//create the contextual search script source
+var cxs_record = new GlideRecord('x_302527_ai_search_script_source');
+cxs_record.initialize();
+cxs_record.name = 'contextual search script';
+s = '<div><h2>result from table source incident</h2></div>';
+s=s.split('<').join('&lt;');
+s=s.split('>').join('&gt;');
+incident_record.template = '<p>'+s+'</p>';
+cxs_record.script="var rec = new GlideRecord('incident');";
+var cxs_record_id = cxs_record.insert();
+//gs.warn('script : '+cxs_record_id);
+
+//create a search config 
+var search_config_record = new GlideRecord('x_302527_ai_search_search_config');
+search_config_record.initialize();
+search_config_record.name = 'default search config';
+var search_config_record_id = search_config_record.insert();
+//link the search config with the sources created above 
+var search_config_sources = newGlideRecord('x_302527_ai_search_m2m_search_configs_sources');
+//add incident table source to the default config
+search_config_sources.initialize();
+search_config_sources.search_config = search_config_record_id;
+search_config_sources.source = incident_record_id;
+search_config_sources.insert();
+//add contextual search script source to the default config
+search_config_sources.initialize();
+search_config_sources.search_config = search_config_record_id;
+search_config_sources.source = cxs_record_id;
+search_config_sources.insert();
+]]></script>
+        <sys_class_name>sys_script_fix</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-03-14 09:12:15</sys_created_on>
+        <sys_id>9c062c3fdb4c33004b08a455ca961983</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>setup search sonfig</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_script_fix_9c062c3fdb4c33004b08a455ca961983</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-03-19 08:40:55</sys_updated_on>
+        <unloadable>false</unloadable>
+    </sys_script_fix>
+</record_update>

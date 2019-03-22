@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_rest_message_fn">
+    <sys_rest_message_fn action="INSERT_OR_UPDATE">
+        <authentication_type>inherit_from_parent</authentication_type>
+        <basic_auth_password/>
+        <basic_auth_profile/>
+        <basic_auth_user/>
+        <content/>
+        <function_name>Default GET</function_name>
+        <http_method>get</http_method>
+        <lock>false</lock>
+        <oauth2_profile/>
+        <protocol_name/>
+        <qualified_name>contextual search rest message [ Default GET ]</qualified_name>
+        <rest_endpoint>https://dev69471.service-now.com/api/now/cxs/search</rest_endpoint>
+        <rest_message display_value="contextual search rest message">b9224949db1033004b08a455ca9619e5</rest_message>
+        <sys_class_name>sys_rest_message_fn</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-03-18 08:27:10</sys_created_on>
+        <sys_id>fb62c949db1033004b08a455ca96199b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Default GET</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_rest_message_fn_fb62c949db1033004b08a455ca96199b</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-03-18 08:27:10</sys_updated_on>
+        <use_basic_auth>false</use_basic_auth>
+        <use_mid_server/>
+        <use_mutual_auth>false</use_mutual_auth>
+    </sys_rest_message_fn>
+</record_update>

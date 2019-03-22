@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="search config" max_length="40" name="x_302527_ai_search_search_config" type="collection">
+        <element label="name" max_length="40" name="name" type="string"/>
+    </element>
+</database>

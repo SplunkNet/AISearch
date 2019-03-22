@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_302527_ai_search.search</api_name>
+        <client_callable>true</client_callable>
+        <description/>
+        <name>search</name>
+        <script><![CDATA[var search = Class.create();
+search.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+	search: function(q){
+		//for test reason I took the default search config 
+		var search_config = new GlideRecord('x_302527_ai_search_search_config');
+		search_config.addQuery('name','default search config');
+		search_config.query();
+		if(search_config.next()){
+			//got the search config sys_id now loop throw the related sources
+			var result_set = [];
+			var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
+			search_sources.addQuery('search_config',search_config.sys_id);
+			search_sources.query();
+			while(search_sources.next()){
+				var searchUtils = new SearchUtils();
+				if(search_sources.source.u_table_name!=null){
+					var table_result = searchUtils.searchTableUsingOR(search_sources.source.u_table_name,search_sources.source.u_columns , q);
+					result_set = this.mergeResults(result_set,table_result,'table_result');
+				}
+				if(search_sources.source.script!=null){
+					
+					var script_result = searchUtils.searchScript(search_sources.source, q);
+					result_set = this.mergeResults(result_set,script_result,'script_result');
+				}
+				if(search_sources.source.u_related_words!=null){
+					
+					var static_result = searchUtils.searchStatic( q);
+					result_set = this.mergeResults(result_set,static_result,'static_result');
+					
+				}
+
+			}
+			/// TODO 
+			//when getting new result from source just append the result to other 
+			//by the following function and pass the old and new results 
+			//along with the tag_name of the source used 
+		}
+	},isDuplication : function(rec,result_set){
+		//return object { isduplicate : true , index : 21 , item : obj}
+		var obj = {};
+		for(var i = 0;i<result_set.length;i++){
+			if(item.sys_id == rec.sys_id){
+				obj.isDuplicate = true;
+				obj.index = i;
+				obj.item = result_set[i];
+				return obj;
+			}
+		}
+		obj.isDuplicate = false;
+		return obj;
+	},is_dup : function(rec,resul_set){
+		var obj = { isduplicate : true , index : 21 , item : obj};
+		return obj;
+	},
+	mergeResults : function(result_set,source_result,tag_name){
+		//result_set contain the older results from other resources
+		//loop over new result set and assign the tag_name
+		//filter out duplicated record considering the weight
+		source_result.forEach(function(item){
+			item.tag_name = tag_name;
+			var test = this.is_dup(item,result_set);
+			if( test.isDuplicate){
+				if(item.weight > test.item.weight){
+					result_set[test.index] = item ; 
+				}
+			}else{
+				result_set.push(item);
+			}
+			
+		});
+	},
+    type: 'search'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-03-14 15:35:47</sys_created_on>
+        <sys_id>5a53b57fdb0073004b08a455ca961958</sys_id>
+        <sys_mod_count>19</sys_mod_count>
+        <sys_name>search</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_script_include_5a53b57fdb0073004b08a455ca961958</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-03-21 08:54:46</sys_updated_on>
+    </sys_script_include>
+</record_update>

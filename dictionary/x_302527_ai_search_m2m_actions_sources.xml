@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="Ai Search M2m Actions Sources" max_length="40" name="x_302527_ai_search_m2m_actions_sources" type="collection">
+        <element label="Action" max_length="32" name="action" reference="x_302527_ai_search_action" type="reference"/>
+        <element label="Source" max_length="32" name="source" reference="x_302527_ai_search_source" type="reference"/>
+        <index name="index">
+            <element name="action"/>
+        </index>
+        <index name="index2">
+            <element name="source"/>
+        </index>
+    </element>
+</database>

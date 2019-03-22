@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_302527_ai_search.GlideUtils</api_name>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>GlideUtils</name>
+        <script><![CDATA[var GlideUtils = Class.create();
+GlideUtils.prototype = {
+    initialize: function() {
+    },
+	getFormatedObj : function(rec,table_name){
+		var fields = this.getColumns(table_name);
+		var obj ={};
+		fields.forEach(function(item){
+			obj[item]= rec.getDisplayValue(item);
+        });
+		return obj;
+	},
+	getFormatedObjByColumns : function(rec,columns){
+		var obj ={};
+		columns.forEach(function(item){
+			obj[item]= rec.getDisplayValue(item);
+        });
+		return obj;
+	},
+	getColumns : function(table_name){
+		var table_fields=[];
+		var parent_fields=[];
+		var rec = new GlideRecord('sys_dictionary');
+		rec.addQuery('name='+table_name);
+		rec.addQuery('internal_type!=collection^ORinternal_type=NULL');
+		rec.query();
+		while(rec.next())
+		{
+			table_fields.push(rec.element.toString());
+		}
+		var parent = new GlideRecord('sys_db_object');
+		parent.addQuery('name',table_name);
+		parent.query();
+		var parent_table_name = '';
+		if(parent.next()){
+			parent_table_name = parent.super_class.name;
+			rec = new GlideRecord('sys_dictionary');
+			rec.addQuery('name',parent_table_name);
+			rec.addQuery('internal_type!=collection^ORinternal_type=NULL');
+			rec.query();
+			while(rec.next())
+			{
+				parent_fields.push(rec.element.toString());
+			}
+		}
+		var result = table_fields.concat(parent_fields.filter(function (item) {
+            return table_fields.indexOf(item) < 0;
+		}));
+		return  result;
+	
+	},
+    type: 'GlideUtils'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-03-19 08:47:13</sys_created_on>
+        <sys_id>32af8211db5c33004b08a455ca961996</sys_id>
+        <sys_mod_count>9</sys_mod_count>
+        <sys_name>GlideUtils</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_script_include_32af8211db5c33004b08a455ca961996</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-03-19 15:31:07</sys_updated_on>
+    </sys_script_include>
+</record_update>

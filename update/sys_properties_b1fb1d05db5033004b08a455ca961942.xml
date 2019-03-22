@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
+    <sys_properties action="INSERT_OR_UPDATE">
+        <choices/>
+        <description/>
+        <ignore_cache>false</ignore_cache>
+        <is_private>false</is_private>
+        <name>x_302527_ai_search.contextual_passwd</name>
+        <read_roles/>
+        <suffix>contextual_passwd</suffix>
+        <sys_class_name>sys_properties</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-03-18 10:19:52</sys_created_on>
+        <sys_id>b1fb1d05db5033004b08a455ca961942</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_302527_ai_search.contextual_passwd</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_properties_b1fb1d05db5033004b08a455ca961942</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-03-18 10:19:52</sys_updated_on>
+        <type>password</type>
+        <value>{{gpaes}}gj3CiDBbpZnW6/COz5wXkg==</value>
+        <write_roles/>
+    </sys_properties>
+    <sys_translated_text action="delete_multiple" query="documentkey=b1fb1d05db5033004b08a455ca961942"/>
+</record_update>

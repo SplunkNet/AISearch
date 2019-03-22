@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element extends="x_302527_ai_search_source" label="table source" max_length="40" name="x_302527_ai_search_table_source" type="collection">
+        <element label="Columns" max_length="4000" name="columns" reference="x_302527_ai_search_table_source" reference_qual="javascript:new ColumnsOfTable().getColumns()" type="glide_list" use_reference_qualifier="advanced"/>
+        <element label="Index frequency" max_length="40" name="index_frequency" type="integer"/>
+        <element label="Index time" max_length="40" name="index_time" type="glide_time"/>
+        <element label="Table name" max_length="80" name="table_name" type="table_name"/>
+        <element attributes="no_sort=true,slushbucket_ref_no_expand=true" choice="1" label="Columns" mandatory="true" max_length="1024" name="u_columns" reference="sys_dictionary" reference_qual="javascript:new ColumnsOfTable().getColumns()" type="glide_list" use_reference_qualifier="advanced">
+            <choice/>
+        </element>
+        <element attributes="edge_encryption_enabled=true" label="Index Date Time" max_length="40" name="u_date_time" type="glide_date_time"/>
+        <element choice="1" label="Frequency" mandatory="true" max_length="40" name="u_frequency" type="integer">
+            <choice>
+                <element inactive_on_update="false" label="Once" sequence="0" value="1"/>
+                <element inactive_on_update="false" label="Weekly" sequence="1" value="7"/>
+                <element inactive_on_update="false" label="Monthly" sequence="2" value="30"/>
+                <element inactive_on_update="false" label="Monthly at" sequence="3" value="100"/>
+                <element inactive_on_update="false" label="Weekly at" sequence="4" value="200"/>
+            </choice>
+        </element>
+        <element label="Index Time" mandatory="true" max_length="40" name="u_index_time" type="glide_date_time"/>
+        <element attributes="base_start=true" label="Table Name" mandatory="true" max_length="80" name="u_table_name" type="table_name"/>
+    </element>
+</database>

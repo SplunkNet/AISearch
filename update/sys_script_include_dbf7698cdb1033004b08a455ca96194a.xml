@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_302527_ai_search.SearchUtils</api_name>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>SearchUtils</name>
+        <script><![CDATA[var SearchUtils = Class.create();
+SearchUtils.prototype = {
+    initialize: function() {
+    },
+    searchTableUsingOR: function(table_name,columns,q){
+        //columns will be a string of sys_ids divided by ','
+        columns_names = [];
+        columns=columns.split(',');
+        
+        columns.forEach(function(res) {
+            var columns_record = new GlideRecord('sys_dictionary');
+            columns_record.get(res);
+            columns_names.push(columns_record.element);
+        });
+
+        //split query text into words
+        var query_text = q.split(' ');
+
+        //onliner will be like :
+        //get result that contain the query with OR operator in between 
+
+        var query_string_or = '';
+        var query_string_and = '';
+
+        for (var i = 0; i < columns_names.length; i++) {
+            //append AND operator between colummns
+            if( i != 0){
+                query_string_or += '^';
+                query_string_and +='^';
+            }
+
+            //build the and query
+            if(query_string_and.length==0)
+                query_string_and = columns_names[i]+'LIKE'+q;
+            else
+                query_string_and += columns_names[i]+'LIKE'+q;
+            
+            //build the or query ( or operator put in between every word )
+            for (var index = 0; index < query_text.length; index++) {
+                if(query_string_or.length==0)
+                    query_string_or = columns_names[i]+'LIKE'+query_text[index];
+                
+                else  {
+                    if(index == 0)
+                        query_string_or += columns_names[i]+'LIKE'+query_text[index];
+                    else
+                        query_string_or += '^OR'+columns_names[i]+'LIKE'+query_text[index];
+                } 
+                    
+                
+			}
+            
+		}
+        var rec_arr_and = [];
+        var rec_arr_or = [];
+        gs.warn(query_string_and);
+		gs.warn(query_string_or);
+        //query by AND 
+        var result_and = new GlideRecord(table_name);
+        result_and.addEncodedQuery(query_string_and);
+        result_and.query();
+        //for now we return only the short_dscription and the resolution note
+        var obj;
+        while(result_and.next()){
+            obj = {};
+            obj.u_query_type = 'AND';
+            obj.short_description = result_and.short_description+'';
+            obj.close_notes = result_and.close_notes+'';
+            rec_arr_and.push(obj);
+        }
+
+        //query by OR 
+        var result_or = new GlideRecord(table_name);
+        result_or.addEncodedQuery(query_string_or);
+        result_or.query();
+        
+        while(result_or.next()){
+            obj = {};
+            obj.u_query_type = 'OR';
+            obj.short_description = result_or.short_description+'';
+            obj.close_notes = result_or.close_notes+'';
+            rec_arr_or.push(obj);
+        }
+
+        var c = rec_arr_and.concat(rec_arr_or.filter(function (item) {
+            return rec_arr_and.indexOf(item) < 0;
+        }));
+		gs.warn('tb : '+c);
+        return c;
+
+    },
+	searchScript: function(script_id,q){
+        var evaluator = new GlideScopedEvaluator(); 
+		evaluator.putVariable('q',q);
+		evaluator.putVariable('response',null);
+        //get the script source record
+        gr = new GlideRecord('x_302527_ai_search_script_source'); 
+        gr.get(script_id);
+        //log the result script
+		evaluator.evaluateScript(gr, 'script', null);
+        var list = evaluator.getVariable('response');
+		return list;
+        
+    },
+	searchStatic : function (q) {
+		query_string = '';
+		q = q.split(' ');
+		for(var i = 0;i<q.length;i++){
+			if(i == 0)
+				query_string = 'u_related_wordsLIKE'+q[i];
+			else
+				query_string += query_string+'^ORu_related_wordsLIKE'+q[i];
+		}
+		gs.warn(query_string);
+        var result = [];
+		var glideutils = new GlideUtils();
+        var rec = new GlideRecord('x_302527_ai_search_static_source');
+        rec.addEncodedQuery(query_string);
+        rec.query();
+        while(rec.next()){
+			result.push(glideutils.getFormatedObj(rec,'x_302527_ai_search_static_source'));
+        }
+        //loop over the urls and return the results
+
+        // responses = [];
+        // urls.forEach(function(url){
+        //     var request = new sn_ws.RESTMessageV2();
+        //     request.setEndpoint(url);
+        //     request.setHttpMethod('GET');
+
+        //     request.setRequestHeader("Accept","application/json");
+
+        //     var res = request.execute();
+        //     res = res.getBody();
+        //     res.url = url;
+        //     responses.push(res);
+        // });
+        // return responses;
+		return result;
+    },
+    type: 'SearchUtils'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-03-15 08:37:48</sys_created_on>
+        <sys_id>dbf7698cdb1033004b08a455ca96194a</sys_id>
+        <sys_mod_count>66</sys_mod_count>
+        <sys_name>SearchUtils</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_script_include_dbf7698cdb1033004b08a455ca96194a</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-03-21 08:39:52</sys_updated_on>
+    </sys_script_include>
+</record_update>
