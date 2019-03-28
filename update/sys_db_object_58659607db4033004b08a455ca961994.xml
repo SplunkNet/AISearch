@@ -32,7 +32,7 @@
         <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2019-03-12 09:32:40</sys_updated_on>
         <update_access>false</update_access>
-        <user_role display_value="x_302527_ai_search.action_user" name="x_302527_ai_search.action_user">e8e7da07db4033004b08a455ca96191f</user_role>
+        <user_role/>
         <ws_access>true</ws_access>
     </sys_db_object>
 </record_update>

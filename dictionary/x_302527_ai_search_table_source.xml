@@ -4,7 +4,7 @@
         <element label="Index frequency" max_length="40" name="index_frequency" type="integer"/>
         <element label="Index time" max_length="40" name="index_time" type="glide_time"/>
         <element label="Table name" max_length="80" name="table_name" type="table_name"/>
-        <element attributes="no_sort=true,slushbucket_ref_no_expand=true" choice="1" label="Columns" mandatory="true" max_length="1024" name="u_columns" reference="sys_dictionary" reference_qual="javascript:new ColumnsOfTable().getColumns()" type="glide_list" use_reference_qualifier="advanced">
+        <element attributes="no_sort=true,slushbucket_ref_no_expand=true" choice="1" hint="if not set all columns will be used to search ." label="Columns" max_length="1024" name="u_columns" reference="sys_dictionary" reference_qual="javascript:new ColumnsOfTable().getColumns()" type="glide_list" use_reference_qualifier="advanced">
             <choice/>
         </element>
         <element attributes="edge_encryption_enabled=true" label="Index Date Time" max_length="40" name="u_date_time" type="glide_date_time"/>

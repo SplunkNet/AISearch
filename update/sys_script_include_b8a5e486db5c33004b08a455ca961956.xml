@@ -23,7 +23,6 @@ Search.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 				return obj;
 			},
 			mergeResults : function(result_set,source_result,tag_name){
-				gs.warn('result from source : '+tag_name + ' :\n'+result_set);
 				var ctx = this;
 				//result_set contain the older results from other resources
 				//loop over new result set and assign the tag_name
@@ -58,21 +57,17 @@ Search.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 					search_sources.query();
 					while(search_sources.next()){
 						var searchUtils = new SearchUtils();
-						if(search_sources.source.u_table_name!=null){
+						if(search_sources.source.sys_class_name=='x_302527_ai_search_table_source'){
 							var table_result = [];
-							table_result = searchUtils.searchTableUsingOR(search_sources.source.u_table_name,search_sources.source.u_columns , q);
-							gs.warn('afqs '+result_set.length + ' zfzf '+table_result.length);
-							if(result_set.length != 0)
-								result_set = result_set.concat(table_result);
-							else
+							table_result = searchUtils.searchTable(search_sources.source.u_table_name,search_sources.source.u_columns , q);
 								result_set = this.mergeResults(result_set,table_result,'table_result');
 						}
-						if(search_sources.source.script!=null){
+						if(search_sources.source.sys_class_name=='x_302527_ai_search_script_source'){
 							
 							var script_result = searchUtils.searchScript(search_sources.source, q);
 							result_set = this.mergeResults(result_set,script_result,'script_result');
 						}
-						if(search_sources.source.u_related_words!=null){
+						if(search_sources.source.sys_class_name=='x_302527_ai_search_static_source'){
 							
 							var static_result = searchUtils.searchStatic( q);
 							result_set = this.mergeResults(result_set,static_result,'static_result');
@@ -93,13 +88,13 @@ Search.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-21 08:56:25</sys_created_on>
         <sys_id>b8a5e486db5c33004b08a455ca961956</sys_id>
-        <sys_mod_count>26</sys_mod_count>
+        <sys_mod_count>32</sys_mod_count>
         <sys_name>Search</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_b8a5e486db5c33004b08a455ca961956</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-03-21 15:18:16</sys_updated_on>
+        <sys_updated_on>2019-03-26 10:51:53</sys_updated_on>
     </sys_script_include>
 </record_update>
