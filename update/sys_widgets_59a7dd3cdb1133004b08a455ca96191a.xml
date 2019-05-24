@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_widgets">
+    <sys_widgets action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <name>AI_search</name>
+        <order>100</order>
+        <renderer/>
+        <renderer_type>javascript</renderer_type>
+        <roles/>
+        <script><![CDATA[function sections() {
+    return {
+        'Ai Search': {
+            'type': 'AI_search'
+        }
+    };
+}
+
+function render() {
+    var scope = gs.getCurrentScopeName();
+    scope = (scope == "rhino.global" ? "" : scope + "_");
+    var page = renderer.getPreference('type');
+    return renderer.getRenderedPage(scope + page);
+}
+
+function getEditLink() {
+    var scope = gs.getCurrentScopeName();
+    scope = (scope == "rhino.global" ? "" : scope + "_");
+    var page = renderer.getPreference('type');
+    return "sys_ui_page.do?sysparm_query=name=" + scope + page;
+}]]></script>
+        <sys_class_name>sys_widgets</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-06 08:27:04</sys_created_on>
+        <sys_id>59a7dd3cdb1133004b08a455ca96191a</sys_id>
+        <sys_mod_count>5</sys_mod_count>
+        <sys_name>AI_search</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_widgets_59a7dd3cdb1133004b08a455ca96191a</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-06 09:34:57</sys_updated_on>
+        <top_level_category>false</top_level_category>
+    </sys_widgets>
+</record_update>

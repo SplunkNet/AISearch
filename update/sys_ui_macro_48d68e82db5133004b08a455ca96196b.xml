@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_macro">
+    <sys_ui_macro action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <category>general</category>
+        <description/>
+        <media_type/>
+        <name>search_macro</name>
+        <scoped_name>x_302527_ai_search_search_macro</scoped_name>
+        <sys_class_name>sys_ui_macro</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-10 09:03:02</sys_created_on>
+        <sys_id>48d68e82db5133004b08a455ca96196b</sys_id>
+        <sys_mod_count>57</sys_mod_count>
+        <sys_name>search_macro</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_ui_macro_48d68e82db5133004b08a455ca96196b</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-21 10:25:00</sys_updated_on>
+        <xml><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+	
+<g2:requires name="x_302527_ai_search.search_macro_client.jsdbx" includes="true"/>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+		integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+	<tr>
+		<div id="myApp" ng-app="myApp">
+			<div ng-controller="AISearch">
+
+				<div class='container'>
+					<!-- input and search button -->
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="input-group input-group-lg">
+								<input type="text" class="form-control" id="query_text" ng-model="q"
+									ng-model-options="{ debounce: 1000 }" ng-change="search()" />
+								<div class="input-group-btn">
+									<button type="submit" ng-click="search()" class="btn"><i
+											class="fa fa-search"></i></button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- pannel in sidebar -->
+					<div class="row" style="margin-top:10px;">
+						<div class="col-xs-2 filter_nav">
+							<div class="panel-group" id="accordionMenu" role="tablist" aria-multiselectable="true">
+								<div ng-if="all_results.length >0" class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingOne">
+										<h4 class="panel-title" ng-click="filterItems()">
+											<a>
+												All <span class="badge">{{ all_results.length}}</span>
+											</a>
+										</h4>
+									</div>
+								</div>
+								<div ng-repeat='source in  sources' class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingOne">
+										<h4 class="panel-title">
+											<a role="button" data-toggle="collapse" data-parent="#accordionMenu"
+												href="#{{source.name}}" aria-expanded="true"
+												aria-controls="collapseOne">
+												{{source.name}} <span class="pull-right badge">{{source.number}}</span>
+											</a>
+										</h4>
+									</div>
+									<div id="{{source.name}}" class="panel-collapse collapse in" role="tabpanel"
+										aria-labelledby="headingOne">
+										<div class="panel-body">
+											<ul class="nav">
+												<li><a ng-click="filterItems(source.sys_class_name)">All</a></li>
+												<li ng-repeat="f in source.filteredby">
+													<a
+														ng-click="filterItems(source.sys_class_name,f.name)">{{ f.label }}</a>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<!-- show result from google picker on the sidebar -->
+								<div ng-if=" g_res.items.length>0" class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingOne">
+										<h4 class="panel-title" ng-click="showG_res()">
+											<a>
+												Results from google <span
+													class="badge">{{ g_res.searchInformation.formattedTotalResults}}</span>
+											</a>
+										</h4>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- regular results goes here  -->
+						<div ng-if=" ! show_google ||  show_google==false" class="col-xs-10 list-group filter_nav">
+							<div ng-repeat='result in  results' class='list-group-item'>
+								<div class="row">
+									<div class="col-xs-9">
+										<h4 ng-bind-html="result.display_title">{{result.display_title}}</h4>
+									</div>
+									<a class='col-xs-2' href="{{result.link1}}">open in backend</a>
+									<a class='col-xs-1' ng-click="pop(result)" href="">Preview </a>
+								</div>
+								<div ng-if="!result.test_length">
+									<div ng-bind-html="result.display_description" name="parag">{{result.display_description}}
+										</div>
+								</div>
+								<div ng-if="result.test_length" style="display:inline;" ng-init="rs=result.display_description_short">
+									<div ng-bind-html="rs" name="parag">
+										{{rs}}
+									</div>
+									<strong>
+										<a href="" ng-click="showMore($event,result,this)">show more</a>
+									</strong>
+								</div>
+							</div>
+							<div ng-if=" results.length==0" class="not_found">
+								<h1 class="title_not_found"> Hmm.</h1>
+								<p class="content_not_found">
+									It seems that your search didn't find any matches.</p>
+							</div>
+
+
+						</div>
+						<!-- google results goes here -->
+						<div ng-if=" show_google==true" class="col-xs-10 list-group filter_nav">
+							<div ng-repeat='result in  g_res.items' class='list-group-item'>
+								<div class="row">
+									<div class="col-xs-10">
+										<h4 ng-bind-html="result.htmlTitle">{{result.htmlTitle}}</h4>
+									</div>
+									<a class='col-xs-2' target="_blank" href="{{result.link}}">open in new tab</a>
+								</div>
+								<p ng-bind-html="result.htmlSnippet" name="parag">{{result.htmlSnippet}}</p>
+							</div>
+						</div>
+					</div>
+		
+		<div ng-if=" !show_google || show_google==false" class="row">
+    <nav ng-if='num_page > 1' aria-label="Page navigation goRight">
+      <ul class="pagination pagination-lg pull-right">
+        <button class="btn btn-circle" ng-click="getPage($event,page-1,filtered)" ><i class="fas fa-chevron-left"></i></button>
+        <button  ng-class="{true: 'btn btn-circle selected btn-disabled', false: 'btn btn-circle'}[page == 1]"
+          ng-click="getPage($event,1,filtered)">1</button>
+        <button class="btn btn-circle btn-disabled" ><i class="fas fa-ellipsis-h"></i></button>
+        <div style="display: inline-block;" ng-if="pagination_check">
+          <button class="btn btn-circle" ng-click="getPage($event,page-1,filtered)">{{page-1}}</button>
+          <button class="btn btn-circle selected" ng-click="getPage($event,page,filtered)">{{page}}</button>
+          <button class="btn btn-circle" ng-click="getPage($event,page+1,filtered)">{{page+1}}</button>
+          <button class="btn btn-circle btn-disabled" ><i class="fas fa-ellipsis-h"></i></button>
+        </div>
+        <button  ng-class="{true: 'btn btn-circle selected btn-disabled', false: 'btn btn-circle'}[page == num_page]"
+          ng-click="getPage($event,num_page,filtered)">{{num_page}}</button>
+        <button class="btn btn-circle" ng-click="getPage($event,page+1,filtered)" ><i class="fas fa-chevron-right"></i></button>
+      </ul>
+    </nav>
+  </div>
+  <!-- pagination for google results  -->
+  <div ng-if="show_google==true" class="row">
+    <nav aria-label="...">
+      <ul class="pagination pagination-lg pull-right">
+        <button class="btn btn-circle" ng-click="prev($event)" ><i class="fas fa-chevron-left"></i></button>
+        <button class="btn btn-circle selected" ng-click="getPage(page,filtered)">{{g_page}}</button>
+        <button class="btn btn-circle" ng-click="next($event)" ><i class="fas fa-chevron-right"></i></button>
+      </ul>
+    </nav>
+  </div>
+				</div>
+
+			</div>
+		</div>
+	</tr>
+	<style>
+	.container{position:relative}.spacer{margin:5px}.not_found{padding:50px;color:#696868}.title_not_found{margin:0;font-size:6em;font-weight:100}.content_not_found{padding:10px;width:95%;font-size:1.5em;line-height:1.4}.filter_nav{margin-top:30px}.filter_nav_elem{margin:10px}.loading{opacity:.5}.overlay-div{width:100%;height:100%;z-index:1;position:fixed;top:0;opacity:1;display:flex;justify-content:center;align-items:center}.btn-circle{width:40px;height:40px;border:solid 1px gray;border-radius:35px;background:#fff;line-height:1.33}.btn-circle.selected{width:50px;height:50px;border:solid 2px #00bf8f}
+	</style>
+</j:jelly>]]></xml>
+    </sys_ui_macro>
+</record_update>

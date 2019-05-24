@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function() {
+  /* widget controller */
+  var c = this;
+		 console.log('dom ready');
+        var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: [ 'interaction', 'dayGrid' ],
+      defaultDate: '2019-04-12',
+			selectable: true,
+      selectMirror: true,
+      select: function(arg) {
+        var title = prompt('Event Title:');
+        if (title) {
+          calendar.addEvent({
+            title: title,
+            start: arg.start,
+            end: arg.end,
+            allDay: arg.allDay
+          })
+        }
+        calendar.unselect()
+      },
+      editable: true,
+      eventLimit: true, // allow "more" link when too many events
+      events: [
+        {
+          title: 'All Day Event',
+          start: '2019-04-01'
+        },
+        {
+          title: 'Long Event',
+          start: '2019-04-07',
+          end: '2019-04-10'
+        },
+        {
+          groupId: 999,
+          title: 'Repeating Event',
+          start: '2019-04-09T16:00:00'
+        },
+        {
+          groupId: 999,
+          title: 'Repeating Event',
+          start: '2019-04-16T16:00:00'
+        },
+        {
+          title: 'Conference',
+          start: '2019-04-11',
+          end: '2019-04-13'
+        },
+        {
+          title: 'Meeting',
+          start: '2019-04-12T10:30:00',
+          end: '2019-04-12T12:30:00'
+        },
+        {
+          title: 'Lunch',
+          start: '2019-04-12T12:00:00'
+        },
+        {
+          title: 'Meeting',
+          start: '2019-04-12T14:30:00'
+        },
+        {
+          title: 'Happy Hour',
+          start: '2019-04-12T17:30:00'
+        },
+        {
+          title: 'Dinner',
+          start: '2019-04-12T20:00:00'
+        },
+        {
+          title: 'Birthday Party',
+          start: '2019-04-13T07:00:00'
+        },
+        {
+          title: 'Click for Google',
+          url: 'http://google.com/',
+          start: '2019-04-28'
+        }
+      ]
+    });
+
+    calendar.render();
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>test_calendar</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>test_calendar</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-04-22 10:03:18</sys_created_on>
+        <sys_id>9d18a5d0db4133004b08a455ca96191a</sys_id>
+        <sys_mod_count>17</sys_mod_count>
+        <sys_name>test_calendar</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sp_widget_9d18a5d0db4133004b08a455ca96191a</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-04-22 12:11:36</sys_updated_on>
+        <template><![CDATA[<div>
+  <div>
+    <h1>
+      amine
+    </h1>
+  </div>
+<!-- your widget template -->
+  <div id="calendar"></div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

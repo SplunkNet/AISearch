@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_page">
+    <sp_page action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <css/>
+        <draft>false</draft>
+        <dynamic_title_structure/>
+        <id>test_calendar</id>
+        <internal>false</internal>
+        <public>false</public>
+        <roles/>
+        <short_description/>
+        <sys_class_name>sp_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-04-22 10:03:18</sys_created_on>
+        <sys_id>5518a114db4133004b08a455ca96198d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>test_calendar</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sp_page_5518a114db4133004b08a455ca96198d</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-04-22 10:03:18</sys_updated_on>
+        <title>test_calendar - Test Page</title>
+    </sp_page>
+    <sys_translated_text action="delete_multiple" query="documentkey=5518a114db4133004b08a455ca96198d"/>
+</record_update>

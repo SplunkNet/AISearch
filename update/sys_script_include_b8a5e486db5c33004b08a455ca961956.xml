@@ -8,7 +8,7 @@
         <name>Search</name>
         <script><![CDATA[var Search = Class.create();
 Search.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
-	isDuplication : function(rec,result_set){
+			isDuplication : function(rec,result_set){
 		//return object { isduplicate : true , index : 21 , item : obj}
 			var obj = {};
 				for(var i = 0;i<result_set.length;i++){
@@ -44,12 +44,19 @@ Search.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 				}
 				return result_set;
 			},
-			search: function(q){
+			search: function(q,source_config_id){
 				//for test reason I took the default search config
+				var config_existe;
 				var search_config = new GlideRecord('x_302527_ai_search_search_config');
-				search_config.addQuery('name','default search config');
-				search_config.query();
-				if(search_config.next()){
+				if(source_config_id){
+					config_existe = search_config.get(source_config_id);
+				}else{
+				
+					search_config.addQuery('name','default search config');
+					search_config.query();
+					config_existe = search_config.next();	
+				}
+				if(config_existe){
 					//got the search config sys_id now loop throw the related sources
 					var result_set = [];
 					var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
@@ -59,7 +66,7 @@ Search.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 						var searchUtils = new SearchUtils();
 						if(search_sources.source.sys_class_name=='x_302527_ai_search_table_source'){
 							var table_result = [];
-							table_result = searchUtils.searchTable(search_sources.source.u_table_name,search_sources.source.u_columns , q);
+							table_result = searchUtils.searchTable(search_sources.source.u_table_name,search_sources.source.u_columns ,search_sources.source.title_field,search_sources.source.description_field, q);
 								result_set = this.mergeResults(result_set,table_result,'table_result');
 						}
 						if(search_sources.source.sys_class_name=='x_302527_ai_search_script_source'){
@@ -88,13 +95,13 @@ Search.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-21 08:56:25</sys_created_on>
         <sys_id>b8a5e486db5c33004b08a455ca961956</sys_id>
-        <sys_mod_count>32</sys_mod_count>
+        <sys_mod_count>35</sys_mod_count>
         <sys_name>Search</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_b8a5e486db5c33004b08a455ca961956</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-03-26 10:51:53</sys_updated_on>
+        <sys_updated_on>2019-05-24 10:01:29</sys_updated_on>
     </sys_script_include>
 </record_update>

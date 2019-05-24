@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_302527_ai_search.SearchHelper</api_name>
+        <client_callable>true</client_callable>
+        <description/>
+        <name>SearchHelper</name>
+        <script><![CDATA[var SearchHelper = Class.create();
+SearchHelper.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+    search: function () {
+        var table_filtered_by = [];
+        var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
+        search_sources.addQuery('search_config', '4b443d48dbe133004b08a455ca9619ca');
+        search_sources.query();
+        while (search_sources.next()) {
+            if (search_sources.source.sys_class_name == 'x_302527_ai_search_table_source') {
+                var columns_names = [];
+                if (search_sources.source.filtered_by) {
+                    var columns = search_sources.source.filtered_by.split(',');
+                    columns.forEach(function (res) {
+                        var columns_record = new GlideRecord('sys_dictionary');
+                        columns_record.get(res);
+                        columns_names.push({ name: columns_record.element + '', label: columns_record.column_label + '' });
+                    });
+                    var obj = { table_name: search_sources.source.u_table_name + '', filteredby: columns_names };
+                    table_filtered_by.push(obj);
+                }
+            }
+        }
+
+        var q = this.getParameter('sysparm_q');
+        var searchUtils = new SearchUtils();
+        var res = new Search().search(q);
+        res.forEach(function (item) {
+            if (!item.link1)
+                item.link1 = item.sys_class_name + ".do?sys_id=" + item.sys_id;
+        });
+        var g_res = searchUtils.searchGoogle(q);
+        var google_res;
+        if (g_res.status == 'success')
+            google_res = g_res.response;
+        var response = { 'res': res, 'google_res': google_res, 'table_filtered_by': table_filtered_by };
+        return JSON.stringify(response);
+    },
+    searchGoogle: function () {
+		var searchUtils = new SearchUtils();
+        var q = this.getParameter('sysparm_q');
+        var google = this.getParameter('sysparm_google');
+        var start = this.getParameter('sysparm_start');
+
+        var google_res;
+        var g_res;
+		g_res = searchUtils.searchGoogle(q, start);
+		if (g_res.status == 'success')
+			google_res = g_res.response;
+           
+        
+        return JSON.stringify(google_res);
+    },
+    type: 'SearchHelper'
+});
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-07 09:10:19</sys_created_on>
+        <sys_id>317be645db5133004b08a455ca9619ee</sys_id>
+        <sys_mod_count>24</sys_mod_count>
+        <sys_name>SearchHelper</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_script_include_317be645db5133004b08a455ca9619ee</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-20 10:09:01</sys_updated_on>
+    </sys_script_include>
+</record_update>

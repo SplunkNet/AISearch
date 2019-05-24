@@ -10,12 +10,13 @@
 SearchUtils.prototype = {
     initialize: function() {
     },
-    searchTable: function(table_name,columns,q){
+    searchTable: function(table_name,columns,title_field,description_field,q){
         //columns will be a string of sys_ids divided by ','
 		var glideutils = new GlideUtils();
-        var labels = ['sys_id','short_description','close_notes'];
+        var labels = ['sys_id','sys_class_name','short_description','close_notes'];
 		var result = [];
 		var obj = {};
+		var source_limit = gs.getProperty('x_302527_ai_search.source_limit');
         if(columns){
             columns_names = [];
             columns=columns.split(',');
@@ -70,10 +71,13 @@ SearchUtils.prototype = {
             //query by AND 
             var result_and = new GlideRecord(table_name);
             result_and.addEncodedQuery(query_string_and);
+			result_and.setLimit(source_limit);
             result_and.query();
             //for now we return only the short_dscription and the resolution note
             while(result_and.next()){
-                obj = glideutils.getFormatedObjByColumns(result_and,labels,q);
+                obj = glideutils.getFormatedObj(result_and,table_name,q);
+				obj.display_title = obj[title_field];
+				obj.display_description = obj[description_field];
                 obj.u_query_type = 'AND';
                 rec_arr_and.push(obj);
             }
@@ -81,10 +85,13 @@ SearchUtils.prototype = {
             //query by OR 
             var result_or = new GlideRecord(table_name);
             result_or.addEncodedQuery(query_string_or);
+			result_or.setLimit(source_limit);
             result_or.query();
             
             while(result_or.next()){
-                obj = glideutils.getFormatedObjByColumns(result_or,labels,q);
+                obj = glideutils.getFormatedObj(result_or,table_name,q);
+				obj.display_title = obj[title_field];
+				obj.display_description = obj[description_field];
                 obj.u_query_type = 'OR';
                 rec_arr_or.push(obj);
             }
@@ -100,6 +107,8 @@ SearchUtils.prototype = {
             rec.query();
             while(rec.next()){
                 obj = glideutils.getFormatedObj(rec,table_name,q);
+				obj.display_title = obj[title_field];
+				obj.display_description = obj[description_field];
                 result.push(obj);
             }
             return result;
@@ -108,7 +117,8 @@ SearchUtils.prototype = {
 
     },
 	searchScript: function(script_id,q){
-        var evaluator = new GlideScopedEvaluator(); 
+        var source_limit = gs.getProperty('x_302527_ai_search.source_limit');
+		var evaluator = new GlideScopedEvaluator(); 
 		evaluator.putVariable('q',q);
 		evaluator.putVariable('response',null);
         //get the script source record
@@ -116,8 +126,9 @@ SearchUtils.prototype = {
         gr.get(script_id);
         //log the result script
 		evaluator.evaluateScript(gr, 'script', null);
-        var list = evaluator.getVariable('response');
-		return list;
+        var list = [];
+		list = evaluator.getVariable('response');
+		return list.slice(0,source_limit);
         
     },
 	searchStatic : function (q) {
@@ -155,19 +166,54 @@ SearchUtils.prototype = {
         // return responses;
 		return result;
     },
+    searchGoogle : function(q,start){
+        var result = {};
+        var key = gs.getProperty('x_302527_ai_search.google_key');
+        var cx = gs.getProperty('x_302527_ai_search.google_engine_context');
+        if(cx && key){
+            var request = new sn_ws.RESTMessageV2();
+            request.setEndpoint('https://www.googleapis.com/customsearch/v1');
+            request.setHttpMethod('GET');
+            request.setQueryParameter('key',key);
+            request.setQueryParameter('cx',cx);
+            request.setQueryParameter('q',q);
+			request.setQueryParameter('num',5);
+            request.setRequestHeader("Accept","application/json");
+			if(start){
+				request.setQueryParameter('start',start);
+			}
+            var response = request.execute();
+            response = JSON.parse(response.getBody());
+            if(response.hasOwnProperty('error')){
+                result.status = 'fail';
+                if(response.error.message=='Bad Request')
+                    result.message = 'Key is not set or invalid';
+                if(response.error.message=='Invalid Value')
+                    result.message = 'context is not set or invalid';
+            }else{
+                result.status = 'success';
+                result.response = response ;
+            }
+            
+        }else{
+            result.status = 'fail';
+            result.message = 'Key or context is not defined. make sure you set them in google search setup module .';
+        }
+        return result ; 
+    },
     type: 'SearchUtils'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-15 08:37:48</sys_created_on>
         <sys_id>dbf7698cdb1033004b08a455ca96194a</sys_id>
-        <sys_mod_count>80</sys_mod_count>
+        <sys_mod_count>98</sys_mod_count>
         <sys_name>SearchUtils</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_dbf7698cdb1033004b08a455ca96194a</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-03-27 14:03:41</sys_updated_on>
+        <sys_updated_on>2019-05-23 09:07:19</sys_updated_on>
     </sys_script_include>
 </record_update>

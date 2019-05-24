@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, spModal) {
+        /* widget controller */
+        var c = this;
+	console.log(c.options);
+        var item_per_page = 5;
+        c.data.table_filtered_by = [];
+				c.data.loading = false;
+        $scope.search = function () {
+								c.data.loading = true;
+                if ($scope.q.length < 5)
+                        return;
+                c.data.action = 'search';
+                c.data.q = $scope.q;
+                c.server.update().then(function (res) {
+												c.data.loading = false ;
+                        c.data.g_res = res.google_res;
+												c.data.g_page = 1;
+                        c.data.table_filtered_by = res.table_filtered_by;
+                        c.data.all_results = res.res;
+                        $scope.calculatePages();
+                        c.data.sources = [];
+                        c.data.all_results.forEach(function (item) {
+                                if ($scope.findSource(item.table_name) == -1) {
+                                        //if the table has a filtered by columns append it to sources if not it will not be displayed
+                                        c.data.table_filtered_by.forEach(function (t) {
+                                                if (t.table_name == item.sys_class_name) {
+																												//remove filters that gives no results 
+																												var filteredby = [];
+																												t.filteredby.forEach(function(i){
+																														if(testFilters(c.data.all_results,item.sys_class_name,i.name))
+																																filteredby.push(i);
+																												});
+																												var obj = { name: item.table_name, number: 1, sys_class_name: item.sys_class_name, filteredby: filteredby }
+																												c.data.sources.push(obj);
+                                                } else {
+                                                        c.data.sources.push({ name: item.table_name, number: 1, sys_class_name: item.sys_class_name });
+                                                }
+                                        });
+                                } else {
+                                        var i = $scope.findSource(item.table_name);
+                                        c.data.sources[i].number++;
+
+                                }
+                        });
+                });
+        };
+
+        $scope.showMore = function ($event, parag, e) {
+                if ($event.target.innerHTML == 'show more') {
+                        $event.target.innerHTML = 'show less';
+                        e.rs = parag;
+                } else if ($event.target.innerHTML == 'show less') {
+                        $event.target.innerHTML = 'show more';
+                        var last_space = parag.substr(0, 200).lastIndexOf(' ');
+                        e.rs = parag.substr(0, last_space);
+                }
+
+        };
+        $scope.getPage = function (page, res) {
+						if(page>=1&&page<=c.data.num_page){
+							var all = res || c.data.all_results;
+                c.data.page = page;
+                if (c.data.page == c.data.num_page)
+                        c.data.results = all.slice((c.data.page - 1) * item_per_page, all.length);
+                else
+                        c.data.results = all.slice((c.data.page - 1) * item_per_page, c.data.page * item_per_page);
+						}
+					if(document.activeElement.toString() == '[object HTMLButtonElement]'){ document.activeElement.blur(); } 
+                
+        };
+        $scope.calculatePages = function (res) {
+                var all = res || c.data.all_results;
+                if (all.length < 6) {
+                        c.data.num_page = 1;
+												c.data.page = 1;
+                        c.data.results = all;
+                }
+                else {
+                        if (all.length % item_per_page == 0)
+                                c.data.num_page = all.length / item_per_page;
+                        else
+                                c.data.num_page = parseInt(all.length / item_per_page) + 1;
+                        c.data.page = 1;
+                        c.data.results = all.slice(0, item_per_page);
+                }
+        };
+        $scope.filterItems = function (source_name, column) {
+                c.data.show_google = false;
+                if (!source_name) {
+                        c.data.results = c.data.all_results;
+                        c.data.filtered = c.data.all_results;
+                        $scope.calculatePages();
+                } else {
+                        if (column) {
+                                filtered = [];
+                                c.data.all_results.forEach(function (item) {
+                                        console.log($scope.str_contains(item[column + ''], $scope.q));
+                                        if (item.sys_class_name == source_name && $scope.str_contains(item[column + ''], $scope.q))
+                                                filtered.push(item);
+                                });
+                                console.log(JSON.stringify(filtered));
+                                c.data.filtered = filtered;
+                                $scope.calculatePages(filtered);
+                        } else {
+                                filtered = [];
+                                c.data.all_results.forEach(function (item) {
+                                        if (item.sys_class_name == source_name)
+                                                filtered.push(item);
+                                });
+                                c.data.filtered = filtered;
+                                $scope.calculatePages(filtered);
+                        }
+                }
+        };
+        $scope.showG_res = function () {
+                c.data.show_google = true;
+        };
+        $scope.next = function(){
+                if(c.data.g_res.queries.hasOwnProperty('nextPage')){
+												c.data.loading = true;
+                        c.data.action = "google";
+                        c.data.google = 'next';
+                        c.data.start = c.data.g_res.queries.nextPage[0].startIndex;
+                        c.server.update().then(function (res) {
+																c.data.loading = false;
+                                c.data.g_res = res.google_res;
+																c.data.g_page++;
+                        });
+                }
+        };
+        $scope.prev = function(){
+                if(c.data.g_res.queries.hasOwnProperty('previousPage')){
+												c.data.loading = true;
+                        c.data.action = "google";
+                        c.data.google = 'previous';
+                        c.data.start = c.data.g_res.queries.previousPage[0].startIndex;
+                        c.server.update().then(function (res) {
+																c.data.loading = false ;
+                                c.data.g_res = res.google_res;
+																c.data.g_page--;
+                        });
+									
+                }
+        };
+        $scope.pop = function (obj) {
+                spModal.open({
+                        title: obj.table_name,
+                        size: 'lg',
+                        widget: 'widget-form',
+                        widgetInput: { table: obj.sys_class_name, sys_id: obj.sys_id }
+                }).then(function () {
+                        console.log('widget dismissed');
+                });
+        }
+        /*
+        *Helper functions
+        */
+				function testFilters(all_result , table_name , column ) {
+						var test = false ;
+						all_result.forEach(function(item){
+								if (item.sys_class_name == table_name && $scope.str_contains(item[column + ''], $scope.q))
+												test = true;
+						});
+						return test ;
+				}
+        $scope.range = function (min, max, step) {
+                step = step || 1;
+                var input = [];
+                for (var i = min; i <= max; i += step) input.push(i);
+                return input;
+        };
+        $scope.findSource = function (source_name) {
+                for (var index = 0; index < c.data.sources.length; index++) {
+                        if (c.data.sources[index].name == source_name)
+                                return index
+
+                }
+                return -1;
+        };
+        $scope.str_contains = function (str, q) {
+                var status = false;
+                var t = q.split(' ');
+                if (str)
+                        t.forEach(function (item) {
+                                if (str.toLowerCase().includes(item.toLowerCase())) {
+                                        status = true;
+                                }
+
+                        });
+                return status;
+        };
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.container{
+position:relative;
+}
+.spacer{
+    margin: 5px;
+}
+.not_found{
+    padding: 50px;
+    color: rgb(105, 104, 104);
+}
+.title_not_found {
+    margin: 0;
+    font-size: 6em;
+    font-weight: 100;
+  }
+  
+.content_not_found {
+    padding: 10px ;
+    width: 95%;
+    font-size: 1.5em;
+    line-height: 1.4;
+  }
+  .filter_nav{
+    margin-top: 30px;
+  }
+.filter_nav_elem{
+  
+    margin: 10px;
+}
+.loading{
+opacity:.5;
+}
+.search-form {
+    border-radius: 30px 0px 0px 30px;
+  	border : solid 1px #00bf8f; 
+}
+ .search-btn {
+    border-radius: 0px 30px 30px 0px !important;
+   	background : #00bf8f;
+}
+.fa-search{
+  color:white;
+}
+.overlay-div{
+  width: 100%;
+  height: 100%;
+  z-index:1;
+	position:fixed;
+  top:0;
+  opacity:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.btn-circle {
+    width: 40px;
+    height: 40px;
+  	border : solid 1px gray;
+    border-radius: 35px ;
+  	background:white;
+    line-height: 1.33;
+}
+.btn-circle.selected {
+    width: 50px;
+    height: 50px;
+  border : solid 2px #00bf8f;
+}
+$transition-duration: 2s;
+$path-length: 157px; // Retrieved using SVG's getTotalLength()
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+svg {
+  overflow: visible;
+  width: 100px;
+  height: 150px;
+  
+  g {
+    animation: slide $transition-duration linear infinite;
+    
+    &amp;:nth-child(2) {
+      animation-delay: $transition-duration / 4;
+      
+      path {
+        animation-delay: $transition-duration / 4;
+        stroke-dasharray: 0px $path-length + 1;
+        stroke-dashoffset: 1px;
+      }
+    }
+  }
+  
+  path{
+    stroke: url(#gradient);
+    stroke-width: 20px;
+    stroke-linecap: round;
+    fill: none;
+    stroke-dasharray: 0 $path-length;
+    stroke-dashoffset: 0;
+    animation: escalade $transition-duration cubic-bezier(0.8, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes slide {
+  0% {
+    transform: translateY(-50px);
+  }
+  100% {
+    transform: translateY(50px);
+  }
+}
+
+@keyframes escalade {
+  0% {
+    stroke-dasharray: 0 $path-length;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: $path-length - 1 $path-length;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: $path-length - 1 $path-length;
+    stroke-dashoffset: -($path-length - 1);
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ai_search_clone</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>AI search clone</name>
+        <option_schema>[{"displayValue":"search config","name":"search_config","display_value_list":[],"section":"other","label":"search config :","type":"glide_list","value":"x_302527_ai_search_search_config","ed":{"reference":"x_302527_ai_search_search_config"}}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+    /* populate the 'data' object */
+    /* e.g., data.table = $sp.getValue('table'); */
+
+	/*
+	**We must have the source config objects or the list of sources.
+	**For testing we will have the default test config as reference .
+	*/
+	var search_config_id=options.search_config.value;
+	if(!search_config_id){
+		var search_config = new GlideRecord('x_302527_ai_search_search_config');
+		search_config.addQuery('name','default search config');
+		search_config.query();
+		if(search_config.next())
+			search_config_id = search_config.sys_id	
+	}
+	data.table_filtered_by=[];
+	var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
+	search_sources.addQuery('search_config',search_config_id);
+	search_sources.query();
+	while(search_sources.next()){
+		if(search_sources.source.sys_class_name=='x_302527_ai_search_table_source'){
+			var columns_names = [];
+			gs.warn("amine "+search_sources.source.filtered_by);
+			if(search_sources.source.filtered_by)  {  
+				var columns=search_sources.source.filtered_by.split(',');  
+				columns.forEach(function(res) {
+					var columns_record = new GlideRecord('sys_dictionary');
+					columns_record.get(res);
+					columns_names.push({name:columns_record.element+'',label:columns_record.column_label+''});
+				});
+				var obj={table_name:search_sources.source.u_table_name+'',filteredby:columns_names};
+				data.table_filtered_by.push(obj);
+				gs.warn("amine : "+JSON.stringify(obj));
+			}
+		}
+	}
+	var searchUtils = new SearchUtils();
+    if(input && input.action=='search'){
+			data.source_tables = [];
+        var res = new Search().search(input.q);
+        res.forEach(function(item) {
+            if(!item.link1)
+                item.link1=item.sys_class_name+".do?sys_id="+item.sys_id;
+        });
+        data.res = res;
+			var g_res = searchUtils.searchGoogle(input.q);
+			if(g_res.status=='success')
+				data.google_res = g_res.response;
+        
+    }
+		if(input && input.action =='google'){
+			if(input.google=='next'){
+				var g_res = searchUtils.searchGoogle(input.q,input.start);
+				if(g_res.status=='success')
+					data.google_res = g_res.response;
+			}
+			if(input.google=='previous'){
+				var g_res = searchUtils.searchGoogle(input.q,input.start);
+				if(g_res.status=='success')
+					data.google_res = g_res.response;
+			}
+		}
+  })();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-04-15 12:54:22</sys_created_on>
+        <sys_id>ae1cca46dbf033004b08a455ca961971</sys_id>
+        <sys_mod_count>509</sys_mod_count>
+        <sys_name>AI search clone</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sp_widget_ae1cca46dbf033004b08a455ca961971</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-24 09:54:20</sys_updated_on>
+        <template><![CDATA[<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+  integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+
+<div class='container' ng-class="{true: 'loading', false: ''}[c.data.loading==true]">
+  <!-- input and search button -->
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8 ">
+      <div class="input-group input-group-lg">
+        <input type="text" class="form-control search-form" placeholder="Search ..." id="query_text" ng-model="q" ng-model-options="{ debounce: 2000 }"
+          ng-change="search()" />
+        <div class="input-group-btn">
+          <button type="submit" ng-click="search()" class="btn search-btn"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- pannel in sidebar -->
+  <div class="row">
+    <div class="col-md-2 filter_nav">
+      <div class="panel-group" id="accordionMenu" role="tablist" aria-multiselectable="true">
+        <div ng-if="c.data.all_results.length >0" class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title" ng-click="filterItems()">
+              <a>
+                All <span class=" pull-right badge">{{c.data.all_results.length}}</span>
+              </a>
+            </h4>
+          </div>
+        </div>
+        <div ng-repeat='source in c.data.sources' class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordionMenu" href="#{{source.name}}"
+                aria-expanded="true" aria-controls="collapseOne">
+                {{source.name}} <span class="pull-right badge">{{source.number}}</span>
+              </a>
+            </h4>
+          </div>
+          <div id="{{source.name}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+              <ul class="nav">
+                <li><a ng-click="filterItems(source.sys_class_name)">All</a></li>
+                <li ng-repeat="f in source.filteredby">
+                  <a ng-click="filterItems(source.sys_class_name,f.name)">{{ f.label }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- show result from google picker on the sidebar -->
+        <div ng-if="c.data.g_res.items.length>0" class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title" ng-click="showG_res()">
+              <a>
+                Google <span class=" pull-right badge">{{c.data.g_res.searchInformation.formattedTotalResults}}</span>
+              </a>
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- regular results goes here  -->
+    <div ng-if=" !c.data.show_google || c.data.show_google==false" class="col-md-10 list-group filter_nav">
+      <div ng-repeat='result in c.data.results' class='list-group-item'>
+        <div class="row">
+          <div class="col-md-8">
+            <h4 ng-bind-html="result.display_title">{{result.display_title}}</h4>
+          </div>
+          <a class='col-md-2' href="{{result.link1}}">open in backend</a>
+          <a class='col-md-2' ng-click="pop(result)" href="">Preview </a>
+        </div>
+        <div ng-if="result.display_description.length<200">
+          <p ng-bind-html="result.display_description" name="parag">{{result.display_description}}</p>
+        </div>
+        <div ng-if="result.display_description.length>200"
+          ng-init="rs=result.display_description.substr(0,result.display_description.substr(0,200).lastIndexOf(' '))"
+          style="display:inline;">
+          <p ng-bind-html="rs" name="parag">{{rs}}</p><strong><a href=""
+              ng-click="showMore($event,result.display_description,this)">show more</a></strong>
+        </div>
+      </div>
+      <div ng-if="c.data.results.length==0" class="not_found">
+        <h1 class="title_not_found"> Hmm.</h1>
+        <p class="content_not_found">
+          It seems that your search didn't find any matches.</p>
+      </div>
+
+
+    </div>
+    <!-- google results goes here -->
+    <div ng-if="c.data.show_google==true" class="col-md-10 list-group filter_nav">
+      <div ng-repeat='result in c.data.g_res.items' class='list-group-item'>
+        <div class="row">
+          <div class="col-md-10">
+            <h4 ng-bind-html="result.htmlTitle">{{result.htmlTitle}}</h4>
+          </div>
+          <a class='col-md-2' target="_blank" href="{{result.link}}">open in new tab</a>
+        </div>
+        <p ng-bind-html="result.htmlSnippet" name="parag">{{result.htmlSnippet}}</p>
+      </div>
+    </div>
+  </div>
+  <!-- pagination for regular results -->
+
+  <div ng-if=" !c.data.show_google || c.data.show_google==false" class="row">
+    <nav ng-if='c.data.num_page > 1' aria-label="Page navigation goRight">
+      <ul class="pagination pagination-lg pull-right">
+        <button class="btn btn-circle" ng-click="getPage(c.data.page-1,c.data.filtered)" ><i class="fas fa-chevron-left"></i></button>
+        <button  ng-class="{true: 'btn btn-circle selected btn-disabled', false: 'btn btn-circle'}[c.data.page == 1]"
+          ng-click="getPage(1,c.data.filtered)">1</button>
+        <button class="btn btn-circle btn-disabled" ><i class="fas fa-ellipsis-h"></i></button>
+        <div style="display: inline-block;" ng-if="c.data.page > 5 && c.data.page < c.data.num_page-4 ">
+          <button class="btn btn-circle" ng-click="getPage(c.data.page-1,c.data.filtered)">{{c.data.page-1}}</button>
+          <button class="btn btn-circle selected" ng-click="getPage(c.data.page,c.data.filtered)">{{c.data.page}}</button>
+          <button class="btn btn-circle" ng-click="getPage(c.data.page+1,c.data.filtered)">{{c.data.page+1}}</button>
+          <button class="btn btn-circle btn-disabled" ><i class="fas fa-ellipsis-h"></i></button>
+        </div>
+        <button  ng-class="{true: 'btn btn-circle selected btn-disabled', false: 'btn btn-circle'}[c.data.page == c.data.num_page]"
+          ng-click="getPage(c.data.num_page,c.data.filtered)">{{c.data.num_page}}</button>
+        <button class="btn btn-circle" ng-click="getPage(c.data.page+1,c.data.filtered)" ><i class="fas fa-chevron-right"></i></button>
+      </ul>
+    </nav>
+  </div>
+  <!-- pagination for google results  -->
+  <div ng-if="c.data.show_google==true" class="row">
+    <nav aria-label="...">
+      <ul class="pagination pagination-lg pull-right">
+        <button class="btn btn-circle" ng-click="prev()" ><i class="fas fa-chevron-left"></i></button>
+        <button class="btn btn-circle selected" ng-click="getPage(c.data.page,c.data.filtered)">{{c.data.g_page}}</button>
+        <button class="btn btn-circle" ng-click="next()" ><i class="fas fa-chevron-right"></i></button>
+      </ul>
+    </nav>
+  </div>
+</div>
+<div ng-if="c.data.loading==true" class="overlay-div">
+  <svg>
+    <g>
+      <path d="M 50,100 A 1,1 0 0 1 50,0" />
+    </g>
+    <g>
+      <path d="M 50,75 A 1,1 0 0 0 50,-25" />
+    </g>
+    <defs>
+      <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#001510;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#00bf8f;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+  </svg>
+</div>]]></template>
+    </sp_widget>
+</record_update>

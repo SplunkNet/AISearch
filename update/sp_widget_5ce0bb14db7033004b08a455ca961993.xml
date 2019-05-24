@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope) {
+    /* widget controller */
+    var c = this;
+    var input_field = document.getElementById('query_text');
+    $scope.search = function() {
+        console.log('clicked');
+        c.data.action = 'search' ;
+        c.data.q = input_field.value;
+        c.server.update().then(function(res) {
+            c.data.results = res.res ;
+            c.data.sources = [];
+            c.data.results.forEach(function(item){
+                if($scope.findSource(item.sys_class_name)==-1){
+                    c.data.sources.push({name:item.sys_class_name,number:1});
+                }else{
+                    var i = $scope.findSource(item.sys_class_name);
+                    c.data.sources[i].number++;
+
+                }
+            });
+        });
+    };
+    $scope.getPage = function(page){
+        console.log(page);
+        c.data.action = 'getPage';
+        c.data.page = page;
+        c.server.update().then(function(res){
+            c.data.results = res.res ;
+            
+            console.log(JSON.stringify(res.res));
+        });
+    };
+
+
+    $scope.range = function(min, max, step){
+        step = step || 1;
+        var input = [];
+        for (var i = min; i <= max; i += step) input.push(i);
+        return input;
+    };
+    $scope.findSource = function( source_name){
+        for (var index = 0; index < c.data.sources.length; index++) {
+            if(c.data.sources[index].name==source_name)
+                return index
+
+        }
+        return -1 ;
+    }
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.card{
+	background : white ;
+    border-radius: 15px;
+    height: 150px; 
+    margin-top: 30px;
+    padding: 10px;
+    box-shadow: 1px 2px 10px 3px #ccc;
+    overflow: hidden;   
+    height: 1%;
+}
+.goRight{
+    float: left;
+}
+.spacer{
+    margin: 5px;
+}
+.not_found{
+    padding: 50px;
+    color: rgb(105, 104, 104);
+}
+.title_not_found {
+    margin: 0;
+    font-size: 6em;
+    font-weight: 100;
+  }
+  
+.content_not_found {
+    padding: 10px ;
+    width: 95%;
+    font-size: 1.5em;
+    line-height: 1.4;
+  }
+  .filter_nav{
+    margin-top: 30px;
+  }
+.filter_nav_elem{
+  
+  padding: 10px;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ai_search</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>AI search</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+    /* populate the 'data' object */
+    /* e.g., data.table = $sp.getValue('table'); */
+
+    var item_per_page = 5 ;
+    data.all=[];
+    if(input){
+        var res = new Search().search(input.q);
+        res.forEach(function(item) {
+            if(!item.title){
+                if(item.number)
+                    item.title = item.number ;
+            }
+            if(!item.description){
+                if(item.short_description)
+                    item.description  =  item.short_description;
+            }
+            if(!item.link1)
+                item.link1=item.sys_class_name+".do?sys_id="+item.sys_id;
+        });
+        data.all = res ;
+        gs.warn('amine getting it : '+data.all );
+        if(input.action=='search'){
+            data.numpage = 0 ;
+            var total = res.length;
+            if(total < item_per_page){
+                data.numpage = 1;
+                data.res = res;
+            }else{
+                if(total % item_per_page == 0)
+                    data.numpage = total/item_per_page;
+                else
+                    data.numpage = parseInt(total/item_per_page)+1;
+                data.page = 0;
+                data.res = res.slice(data.page * item_per_page,( data.page + 1)*item_per_page);
+            }
+            //data.res = res;
+        }
+        if( input.action=='getPage'){
+            data.page = input.page-1;
+            gs.warn('amine page : '+data.page);
+            gs.warn('amine all : '+data.all);
+            if(data.page+1 == data.numpage)
+                data.res = data.all.slice(data.page * item_per_page,data.all.length);
+            else
+                data.res = data.all.slice(data.page * item_per_page,( data.page + 1)*item_per_page);
+        }
+    }
+    
+  })();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-04-10 09:45:18</sys_created_on>
+        <sys_id>5ce0bb14db7033004b08a455ca961993</sys_id>
+        <sys_mod_count>211</sys_mod_count>
+        <sys_name>AI search</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sp_widget_5ce0bb14db7033004b08a455ca961993</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-04-15 12:54:01</sys_updated_on>
+        <template><![CDATA[  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <div class='container'>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="input-group input-group-lg">
+              <input type="text" class="form-control" id="query_text" />
+            <div class="input-group-btn">
+              <button type="submit"  ng-click="search()" class="btn"><i class="fa fa-search"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="col-xs-2 filter_nav">
+      <button ng-repeat='source in c.data.sources' class="btn btn-primary filter_nav_elem" type="button" >
+          {{source.name}} <span class="badge">{{source.number}}</span>
+        </button>
+    </div>
+    <div class="col-xs-10">
+        <div ng-repeat='result in c.data.results' class ='card'>
+            <h4>{{result.title}}</h4>
+          <div>
+              <p ng-bind-html="result.description">{{result.description}}</p>
+          </div>
+          <div class='pull-right '>
+            <a class='spacer' href="{{result.link1}}">open in backend</a>
+            <a class='spacer' href="">open in portal </a>
+          </div>
+        </div>
+        <div ng-if="c.data.results.length==0" class="not_found">
+          <h1 class="title_not_found"> Hmm.</h1>
+          <p class="content_not_found">
+            It seems that your search didn't find any matches.</p>
+        </div>
+        <nav ng-if='c.data.results.length > 3' aria-label="Page navigation goRight">
+            <ul class="pagination pagination-lg " >
+              <li ng-repeat="n in range(1,data.numpage ) " ng-class="{true: 'page-item disabled', false: 'page-item'}[data.page+1 == n]" ng-click="getPage(n)" ><a class="page-link" >{{n}}</button></a>
+            </ul>
+          </nav>
+    </div>
+      
+      <!-- result will show here ! -->
+      
+      
+  </div>]]></template>
+    </sp_widget>
+</record_update>

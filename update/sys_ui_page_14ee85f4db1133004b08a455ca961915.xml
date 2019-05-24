@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[angular.module('sn.filter_widget').controller('myCntrl', function ($scope) {
+    $scope.amine = "testing if it will be altered or showed in worst cases ";
+    var item_per_page = 5;
+    $scope.table_filtered_by = [];
+    $scope.loading = false;
+    $scope.search = function () {
+        console.log('starting search using '+$scope.q);
+        $scope.loading = true;
+        if ($scope.q.length < 5)
+            return;
+        $scope.q = $scope.q;
+        var ga = new GlideAjax('SearchHelper');
+        ga.addParam('sysparm_name', 'search');
+        ga.addParam('sysparm_q', "email");
+        ga.getXMLAnswer(function(res){
+            //$scope.amine = "changing this to loading .... ";
+            callback(res);
+        });
+
+        function callback(res) {
+            console.log("getiing results");
+            $scope.amine = "changing this to loading .... ";
+            res = JSON.parse(res);
+			console.log(JSON.stringify(res));
+            $scope.g_res = res.google_res;
+            $scope.table_filtered_by = res.table_filtered_by;
+            $scope.all_results = res.res;
+            $scope.calculatePages();
+            $scope.sources = [];
+            $scope.all_results.forEach(function (item) {
+                if ($scope.findSource(item.table_name) == -1) {
+                    //if the table has a filtered by columns append it to sources if not it will not be displayed
+                    $scope.table_filtered_by.forEach(function (t) {
+                        console.log(t.table_name + "    :   " + item.sys_class_name);
+                        if (t.table_name == item.sys_class_name) {
+                            $scope.sources.push({ name: item.table_name, number: 1, sys_class_name: item.sys_class_name, filteredby: t.filteredby });
+                        } else {
+                            $scope.sources.push({ name: item.table_name, number: 1, sys_class_name: item.sys_class_name });
+                        }
+                    });
+                } else {
+                    var i = $scope.findSource(item.table_name);
+                    $scope.sources[i].number++;
+
+                }
+            });
+        };
+    };
+
+    $scope.showMore = function ($event, parag, e) {
+        if ($event.target.innerHTML == 'show more') {
+            $event.target.innerHTML = 'show less';
+            e.rs = parag;
+        } else if ($event.target.innerHTML == 'show less') {
+            $event.target.innerHTML = 'show more';
+            var last_space = parag.substr(0, 200).lastIndexOf(' ');
+            e.rs = parag.substr(0, last_space);
+        }
+
+    };
+    $scope.getPage = function (page, res) {
+        var all = res || $scope.all_results;
+        $scope.page = page;
+        if ($scope.page == $scope.num_page)
+            $scope.results = all.slice(($scope.page - 1) * item_per_page, all.length);
+        else
+            $scope.results = all.slice(($scope.page - 1) * item_per_page, $scope.page * item_per_page);
+    };
+    $scope.calculatePages = function (res) {
+        var all = res || $scope.all_results;
+        if (all.length < 6) {
+            $scope.num_page = 1;
+            $scope.results = all;
+        }
+        else {
+            if (all.length % item_per_page == 0)
+                $scope.num_page = all.length / item_per_page;
+            else
+                $scope.num_page = parseInt(all.length / item_per_page) + 1;
+            $scope.page = 1;
+            $scope.results = all.slice(0, item_per_page);
+        }
+    };
+    $scope.filterItems = function (source_name, column) {
+        $scope.show_google = false;
+        if (!source_name) {
+            $scope.results = $scope.all_results;
+            $scope.filtered = $scope.all_results;
+            $scope.calculatePages();
+        } else {
+            if (column) {
+                filtered = [];
+                $scope.all_results.forEach(function (item) {
+                    console.log($scope.str_contains(item[column + ''], $scope.q));
+                    if (item.sys_class_name == source_name && $scope.str_contains(item[column + ''], $scope.q))
+                        filtered.push(item);
+                });
+                console.log(JSON.stringify(filtered));
+                $scope.filtered = filtered;
+                $scope.calculatePages(filtered);
+            } else {
+                filtered = [];
+                $scope.all_results.forEach(function (item) {
+                    if (item.sys_class_name == source_name)
+                        filtered.push(item);
+                });
+                $scope.filtered = filtered;
+                $scope.calculatePages(filtered);
+            }
+        }
+    };
+    $scope.showG_res = function () {
+        $scope.show_google = true;
+    };
+    $scope.next = function () {
+        if ($scope.g_res.queries.hasOwnProperty('nextPage')) {
+            $scope.loading = true;
+            $scope.action = "google";
+            $scope.google = 'next';
+            $scope.start = $scope.g_res.queries.nextPage[0].startIndex;
+            c.server.update().then(function (res) {
+                $scope.loading = false;
+                $scope.g_res = res.google_res;
+            });
+        }
+    };
+    $scope.prev = function () {
+        if ($scope.g_res.queries.hasOwnProperty('previousPage')) {
+            $scope.loading = true;
+            $scope.action = "google";
+            $scope.google = 'previous';
+            $scope.start = $scope.g_res.queries.previousPage[0].startIndex;
+            c.server.update().then(function (res) {
+                $scope.loading = false;
+                $scope.g_res = res.google_res;
+            });
+        }
+    };
+    // $scope.pop = function (obj) {
+    //     spModal.open({
+    //         title: obj.table_name,
+    //         size: 'lg',
+    //         widget: 'widget-form',
+    //         widgetInput: { table: obj.sys_class_name, sys_id: obj.sys_id }
+    //     }).then(function () {
+    //         console.log('widget dismissed');
+    //     });
+    // }
+    /*
+    *Helper functions
+    */
+    $scope.range = function (min, max, step) {
+        step = step || 1;
+        var input = [];
+        for (var i = min; i <= max; i += step) input.push(i);
+        return input;
+    };
+    $scope.findSource = function (source_name) {
+        for (var index = 0; index < $scope.sources.length; index++) {
+            if ($scope.sources[index].name == source_name)
+                return index;
+
+        }
+        return -1;
+    };
+    $scope.str_contains = function (str, q) {
+        var status = false;
+        var t = q.split(' ');
+        if (str)
+            t.forEach(function (item) {
+                if (str.toLowerCase().includes(item.toLowerCase())) {
+                    status = true;
+                }
+
+            });
+        return status;
+    };
+});
+/*
+**do not change this ! 
+*/
+angular.bootstrap(document.getElementById('myapp'), [
+    'sn.filter_widget',
+    'sn.ngform',
+    'sn.common.ui'
+]);]]></client_script>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_302527_ai_search_AI_search.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<g2:requires name="scripts/angular_includes_1.4.js" includes="true"/>
+	<g2:requires name="scripts/heisenberg/heisenberg_all.js" includes="true"/>
+	<g2:requires name="scripts/sn/common/util/js_includes_util.js" includes="true"/>
+	<g2:requires name="scripts/sn/common/messaging/js_includes_messaging.js" includes="true"/>
+	<g2:requires name="scripts/sn/common/controls/js_includes_controls.js" includes="true"/>
+	<g2:requires name="scripts/sn/common/glide/js_includes_glide.js" includes="true"/>
+	<g2:requires name="scripts/sn/common/i18n/js_includes_i18n.js" includes="true"/>
+	<g2:requires name="scripts/sn/common/notification/js_includes_notification.js" includes="true"/>
+	<g2:requires name="scripts/sn/common/ui/js_includes_ui.js" includes="true"/>
+	<g2:requires name="scripts/js_includes_filter_widget.js" includes="true"/>
+	<g2:requires name="scripts/js_includes_ng_form_elements.js" includes="true" />
+	<g2:requires name="/styles/filter.css" />
+	<g2:requires name="/styles/thirdparty/datetimepicker.css" />
+	<div id="myapp" name="awconditionbuilder" ng-controller="myCntrl" class="container" style="padding:50px;">
+		    <!-- widget starts here -->
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+  integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+<div class='container' ng-class="{true: 'loading', false: ''}[ loading==true]" >  
+  <!-- input and search button -->
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="input-group input-group-lg">
+        <input type="text" class="form-control" id="q" name="q" ng-model="q" />
+        <div class="input-group-btn">
+          <button type="submit" ng-click="search()" class="btn"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{amine}}
+  {{all_results}}
+  <!-- pannel in sidebar -->
+  <div class="row">
+    <div class="col-xs-2 filter_nav">
+      <div class="panel-group" id="accordionMenu" role="tablist" aria-multiselectable="true">
+        <div ng-if="all_results.length >0" class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title" ng-click="filterItems()">
+              <a>
+                All <span class="badge">{{ all_results.length}}</span>
+              </a>
+            </h4>
+          </div>
+        </div>
+        <div ng-repeat='source in  sources' class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordionMenu" href="#{{source.name}}"
+                aria-expanded="true" aria-controls="collapseOne">
+                {{source.name}} <span class="pull-right badge">{{source.number}}</span>
+              </a>
+            </h4>
+          </div>
+          <div id="{{source.name}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+              <ul class="nav">
+                <li><a ng-click="filterItems(source.sys_class_name)">All</a></li>
+                <li ng-repeat="f in source.filteredby">
+                  <a ng-click="filterItems(source.sys_class_name,f.name)">{{ f.label }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- show result from google picker on the sidebar -->
+        <div ng-if=" g_res.items.length>0" class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title" ng-click="showG_res()">
+              <a>
+                Results from google <span class="badge">{{ g_res.searchInformation.formattedTotalResults}}</span>
+              </a>
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- regular results goes here  -->
+    <div ng-if=" ! show_google ||  show_google==false" class="col-xs-10 list-group filter_nav">
+      <div ng-repeat='result in  results' class='list-group-item'>
+        <div class="row">
+          <div class="col-xs-9">
+            <h4 ng-bind-html="result.display_title">{{result.display_title}}</h4>
+          </div>
+          <a class='col-xs-2' href="{{result.link1}}">open in backend</a>
+          <a class='col-xs-1' ng-click="pop(result)" href="">Preview </a>
+        </div>
+        <div ng-if="!result.display_description.length>200">
+          <p ng-bind-html="result.display_description" name="parag">{{result.display_description}}</p>
+        </div>
+        <div ng-if="result.display_description.length>200"
+          ng-init="rs=result.display_description.substr(0,result.display_description.substr(0,200).lastIndexOf(' '))"
+          style="display:inline;">
+          <p ng-bind-html="rs" name="parag">{{rs}}</p><strong><a href=""
+              ng-click="showMore($event,result.display_description,this)">show more</a></strong>
+        </div>
+      </div>
+      <div ng-if=" results.length==0" class="not_found">
+        <h1 class="title_not_found"> Hmm.</h1>
+        <p class="content_not_found">
+          It seems that your search didn't find any matches.</p>
+      </div>
+
+
+    </div>
+    <!-- google results goes here -->
+    <div ng-if=" show_google==true" class="col-xs-10 list-group filter_nav">
+      <div ng-repeat='result in  g_res.items' class='list-group-item'>
+        <div class="row">
+          <div class="col-xs-10">
+            <h4 ng-bind-html="result.htmlTitle">{{result.htmlTitle}}</h4>
+          </div>
+          <a class='col-xs-2' target="_blank" href="{{result.link}}">open in new tab</a>
+        </div>
+        <p ng-bind-html="result.htmlSnippet" name="parag">{{result.htmlSnippet}}</p>
+      </div>
+    </div>
+  </div>
+  <!-- pagination for regular results -->
+  <div ng-if=" ! show_google ||  show_google==false" class="row">
+    <nav ng-if=' num_page > 1' aria-label="Page navigation goRight">
+      <ul class="pagination pagination-lg pull-right">
+        <li ng-repeat="n in range(1, num_page ) "
+          ng-class="{true: 'page-item disabled', false: 'page-item'}[ page == n]"
+			ng-click="getPage(n, filtered)"><a class="page-link">{{n}}</a></li>
+      </ul>
+    </nav>
+  </div>
+  <!-- pagination for google results  -->
+  <div ng-if=" show_google==true" class="row">
+    <nav aria-label="...">
+      <ul class="pagination pagination-lg pull-right">
+        <li ng-class="{true: '', false: 'disabled'}[ g_res.queries.hasOwnProperty('previousPage')]"
+          ng-click="prev()" class="page-item ">
+          <a class="page-link">Previous</a>
+        </li>
+        <li ng-class="{true: '', false: 'disabled'}[ g_res.queries.hasOwnProperty('nextPage')]" ng-click="next()"
+          class="page-item">
+          <a class="page-link">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+        <!-- widget ends here -->
+	</div>
+</j:jelly>]]></html>
+        <name>AI_search</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-06 07:49:26</sys_created_on>
+        <sys_id>14ee85f4db1133004b08a455ca961915</sys_id>
+        <sys_mod_count>60</sys_mod_count>
+        <sys_name>AI_search</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_ui_page_14ee85f4db1133004b08a455ca961915</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-07 11:49:43</sys_updated_on>
+    </sys_ui_page>
+</record_update>

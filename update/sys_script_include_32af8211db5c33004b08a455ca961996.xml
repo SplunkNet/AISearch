@@ -15,8 +15,13 @@ GlideUtils.prototype = {
 		var fields = this.getColumns(table_name);
 		var obj ={};
 		fields.forEach(function(item){
-            var highlighted_text = ctx.highlight(rec.getDisplayValue(item),q);
-			obj[item]= highlighted_text;
+			if(item){
+				
+				var highlighted_text = ctx.highlight(rec.getValue(item+''),q);
+				obj[item]= highlighted_text;
+				obj['table_name']=rec.getDisplayValue('sys_class_name');
+			}
+            
         });
 		return obj;
 	},
@@ -64,7 +69,8 @@ GlideUtils.prototype = {
     highlight : function(text,q){
 		q = q.split(' ');
 		q.forEach(function(i){
-		text = text.replace(new RegExp("\\b" + i + "\\b", 'gi'),
+			if(text)
+				text = text.replace(new RegExp("\\b" + i + "\\b", 'gi'),
 							  function(x) {
 								return '<b>' + x + '</b>';
 							  });
@@ -77,13 +83,13 @@ GlideUtils.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-19 08:47:13</sys_created_on>
         <sys_id>32af8211db5c33004b08a455ca961996</sys_id>
-        <sys_mod_count>26</sys_mod_count>
+        <sys_mod_count>33</sys_mod_count>
         <sys_name>GlideUtils</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_32af8211db5c33004b08a455ca961996</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-03-28 08:02:38</sys_updated_on>
+        <sys_updated_on>2019-04-17 10:09:05</sys_updated_on>
     </sys_script_include>
 </record_update>

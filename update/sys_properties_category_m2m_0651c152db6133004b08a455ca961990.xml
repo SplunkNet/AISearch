@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties_category_m2m">
+    <sys_properties_category_m2m action="INSERT_OR_UPDATE">
+        <category display_value="Result limit">9e2181d2db6133004b08a455ca9619f7</category>
+        <order>100</order>
+        <property display_value="x_302527_ai_search.source_limit" name="x_302527_ai_search.source_limit">228f6096db2133004b08a455ca9619fe</property>
+        <sys_class_name>sys_properties_category_m2m</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-23 08:53:19</sys_created_on>
+        <sys_id>0651c152db6133004b08a455ca961990</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_302527_ai_search.source_limit.Result limit</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_properties_category_m2m_0651c152db6133004b08a455ca961990</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-23 08:53:19</sys_updated_on>
+    </sys_properties_category_m2m>
+</record_update>

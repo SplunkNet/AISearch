@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[ function func(){
+	var id  = document.getElementById("id").value;
+	var query  = document.getElementById("search_txt").value;
+  document.getElementById('results').innerHTML ='';
+	document.getElementById('results_num').innerHTML ='';
+	
+	var ga = new GlideAjax('ExecScript'); 
+  ga.addParam('sysparm_name', 'exec');
+  ga.addParam('sysparm_id', id);
+	ga.addParam('sysparm_query', query);
+   ga.getXML(callback);
+	
+	function callback(response) {
+	  var answer = response.responseXML.documentElement.getAttribute('answer');
+		console.log('amine result : '+answer);
+		answer = JSON.parse(answer);
+		if(answer ===null ){
+      document.getElementById('results').innerHTML ='<div class="alert alert-default"><span class="help-block"> Result is null check the log for errors or double check your script ! \n Please Consider the following rules for script source :<li>script must use the predefined variable "q" .</li><li>Define a variable "respone" and put the result in it ,no need to return .</li><li>Result must be a list of objects each one must have a title , description , link1 and link2 .</li></span><a href="syslog_list.do?sysparm_query=" >System logs</a><div>';
+      return ;
+		}
+			
+    if(answer.length != 0 ){
+      var indication_plurale = ( answer.length == 1 ) ? ' result .</span>':' results .</span>' ;
+      document.getElementById('results_num').innerHTML ='<span class="help-block"> We found '+answer.length +indication_plurale;
+      
+      if(answer.length > 10)
+        answer = answer.slice(0,10);
+      if(!check(answer))
+        answer.forEach(function(item){
+          document.getElementById('results').innerHTML +='<div class="list-group-item ">   <div class="row" style="margin : auto ;">  <h4 class="list-group-item-heading pull-left">'+item.title+'</h4> <a class="btn pull-right" href='+item.link1+'>open in admin panel</a><a class="btn pull-right" href='+item.link2+'>open in service portal</a> </div>  <div class="list-group-item-text">'+item.description+'</div></div>';
+        });
+
+    }	else{
+      document.getElementById('results_num').innerHTML ='<span class="help-block"> No result found !</span>';
+		}
+  }
+  function check(res){
+    var str_check = '';
+    if(!res[0].hasOwnProperty('title'))
+      str_check += '<li>Result don\'t have a title ! </li>' ;
+    if(!res[0].hasOwnProperty('description'))
+      str_check += '<li>Result don\'t have a description !</li>' ;
+    if(!res[0].hasOwnProperty('link1'))
+      str_check += '<li>Result don\'t have a link1 ! </li>' ;
+    if(!res[0].hasOwnProperty('link2'))
+      str_check += '<li>Result don\'t have a link2 !</li>' ;
+    if(str_check.length > 0){
+      document.getElementById('results').innerHTML ='<div class="alert alert-danger">' +str_check+ '</div>';
+      return true;
+    }   
+    return false ;
+  }
+}
+]]></client_script>
+        <description/>
+        <direct>true</direct>
+        <endpoint>x_302527_ai_search_test_script_source.do</endpoint>
+        <html><![CDATA[<g:evaluate var="jvar_id" expression="RP.getWindowProperties().id" />    
+<div class="wrap" >
+    <form>
+        <input type="hidden" id="id" value="${jvar_id}" />
+        <input type="text" name="query_text" id="search_txt" class="button" style="color : #d81b60 ; font-weight:bold" placeholder="search" />
+        <input type="button" onclick="func()" id="sub_btn" class="button pink" value="test" /> 
+    </form>
+</div>
+<div id="results_num">
+<!-- indication number goes here !-->
+</div>
+<div id='results' class="list-group">
+        <!-- results goes here ! -->    
+</div> 
+
+  <style> 
+.wrap{margin-top:20px;text-align:center}#search_txt.button,#sub_btn.button{display:inline-block;margin:.3em;padding:1.2em 5em;overflow:hidden;position:relative;text-decoration:none;text-transform:uppercase;border-radius:3px;-webkit-transition:.3s;-moz-transition:.3s;-ms-transition:.3s;-o-transition:.3s;transition:.3s;box-shadow:0 2px 10px rgba(0,0,0,.5);border:none;font-size:15px;text-align:center}.button:hover{box-shadow:1px 6px 15px rgba(0,0,0,.5)}#sub_btn.pink{background-color:#d81b60;color:#fff}#card_div.card{display:inline-block;margin:.3em;padding:1.2em 5em;position:relative;text-decoration:none;text-transform:uppercase;border-radius:3px;width:340px;background:#fff;overflow:hidden;font-family:montserrat,sans-serif;box-shadow:0 0 20px #00000070}.info-section{padding:40px;padding-top:0;color:#333}.container{display:grid;width:100%;height:100%;grid-template-areas:"header header header" "left main right" "footer footer footer";grid-template-columns:120px 4fr 1fr;grid-template-rows:160px 1fr 80px}.section{clear:both;padding:0;margin:0}.col{display:block;float:left;margin:1% 0 1% 1.6%}.col:first-child{margin-left:0}.group:after,.group:before{content:"";display:table}.group:after{clear:both}.group{zoom:1}.span_2_of_2{width:100%}.span_1_of_2{width:49.2%}@media only screen and (max-width:480px){.col{margin:1% 0 1% 0}}
+ </style>  ]]></html>
+        <name>test_script_source</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-03-28 08:54:21</sys_created_on>
+        <sys_id>d1eed4d8db2c33004b08a455ca961942</sys_id>
+        <sys_mod_count>144</sys_mod_count>
+        <sys_name>test_script_source</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_ui_page_d1eed4d8db2c33004b08a455ca961942</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-04-02 08:57:42</sys_updated_on>
+    </sys_ui_page>
+</record_update>
