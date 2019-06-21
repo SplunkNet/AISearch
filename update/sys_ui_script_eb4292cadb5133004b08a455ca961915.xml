@@ -42,21 +42,21 @@ myApp.controller('AISearch', ['$scope','$sce', function ($scope,$sce) {
 					item.test_length=el.textContent.length>200;
 					item.display_description_short = $sce.trustAsHtml(trimHtml(item.display_description+'').html);
                     if ($scope.findSource(item.table_name) == -1) {
+						var filteredby = [];
                         //if the table has a filtered by columns append it to sources if not it will not be displayed
                         $scope.table_filtered_by.forEach(function (t) {
                             if (t.table_name == item.sys_class_name) {
 									//remove filters that gives no results 
-									var filteredby = [];
 									t.filteredby.forEach(function(i){
 										if($scope.testFilters(item.sys_class_name,i.name))
 											filteredby.push(i);
 									});
-									var obj = { name: item.table_name, number: 1, sys_class_name: item.sys_class_name, filteredby: filteredby }
-									$scope.sources.push(obj);
-							} else {
-                                $scope.sources.push({ name: item.table_name, number: 1, sys_class_name: item.sys_class_name });
-                            }
+							}
                         });
+						var obj = { name: item.table_name, number: 1, sys_class_name: item.sys_class_name }
+						if(filteredby)
+							obj.filteredby = filteredby;
+						$scope.sources.push(obj);
                     } else {
                         var i = $scope.findSource(item.table_name);
                         $scope.sources[i].number++;
@@ -340,14 +340,14 @@ myApp.controller('AISearch', ['$scope','$sce', function ($scope,$sce) {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-05-10 09:54:44</sys_created_on>
         <sys_id>eb4292cadb5133004b08a455ca961915</sys_id>
-        <sys_mod_count>69</sys_mod_count>
+        <sys_mod_count>70</sys_mod_count>
         <sys_name>x_302527_ai_search.search_macro_client</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_ui_script_eb4292cadb5133004b08a455ca961915</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-05-21 10:31:47</sys_updated_on>
+        <sys_updated_on>2019-05-29 08:59:42</sys_updated_on>
         <ui_type>10</ui_type>
         <use_scoped_format>false</use_scoped_format>
     </sys_ui_script>

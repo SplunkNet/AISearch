@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_hub_action_instance">
+    <sys_hub_action_instance action="INSERT_OR_UPDATE">
+        <action_inputs/>
+        <action_inputs/>
+        <action_type display_value="Look Up Records">d1c56ec50b30030085c083eb37673a50</action_type>
+        <action_type_parent/>
+        <comment/>
+        <compiled_snapshot/>
+        <display_text/>
+        <flow display_value="test Count">a9a0792bdb6133004b08a455ca96194b</flow>
+        <order>2.1</order>
+        <parent_ui_id>861bd88d-a551-43a9-b6e4-21e64f1a1077</parent_ui_id>
+        <sys_class_name>sys_hub_action_instance</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-27 10:19:26</sys_created_on>
+        <sys_id>3e6b7523dba133004b08a455ca961905</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_hub_action_instance_3e6b7523dba133004b08a455ca961905</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-27 10:19:26</sys_updated_on>
+        <ui_id>5a969f3d-2771-4431-86ee-2c87d4eaba87</ui_id>
+    </sys_hub_action_instance>
+    <sys_variable_value action="delete_multiple" query="document_key=3e6b7523dba133004b08a455ca961905"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>sys_hub_action_instance</document>
+        <document_key>3e6b7523dba133004b08a455ca961905</document_key>
+        <order>2</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-27 10:19:26</sys_created_on>
+        <sys_id>be6b7523dba133004b08a455ca96190a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-27 10:19:26</sys_updated_on>
+        <value>300000</value>
+        <variable display_value="">cd07ee090b30030085c083eb37673a39</variable>
+    </sys_variable_value>
+    <sys_element_mapping action="delete_multiple" query="id=3e6b7523dba133004b08a455ca961905"/>
+    <sys_element_mapping action="INSERT_OR_UPDATE">
+        <field>max_results</field>
+        <id>3e6b7523dba133004b08a455ca961905</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-27 10:19:26</sys_created_on>
+        <sys_id>7a6b7523dba133004b08a455ca96190a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-27 10:19:26</sys_updated_on>
+        <table>var__m_sys_hub_action_input_d1c56ec50b30030085c083eb37673a50</table>
+        <value/>
+    </sys_element_mapping>
+    <sys_element_mapping action="INSERT_OR_UPDATE">
+        <field>table</field>
+        <id>3e6b7523dba133004b08a455ca961905</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-27 10:19:26</sys_created_on>
+        <sys_id>3e6b7523dba133004b08a455ca96190a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-27 10:19:26</sys_updated_on>
+        <table>var__m_sys_hub_action_input_d1c56ec50b30030085c083eb37673a50</table>
+        <value>{{861bd88d-a551-43a9-b6e4-21e64f1a1077.item.u_table_name}}</value>
+    </sys_element_mapping>
+</record_update>

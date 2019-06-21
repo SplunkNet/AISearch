@@ -29,8 +29,7 @@ SearchUtils.prototype = {
     
             //split query text into words
             var query_text = q.split(' ');
-    
-            //onliner will be like :
+			
             //get result that contain the query with OR operator in between 
     
             var query_string_or = '';
@@ -207,13 +206,13 @@ SearchUtils.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-15 08:37:48</sys_created_on>
         <sys_id>dbf7698cdb1033004b08a455ca96194a</sys_id>
-        <sys_mod_count>98</sys_mod_count>
+        <sys_mod_count>99</sys_mod_count>
         <sys_name>SearchUtils</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_dbf7698cdb1033004b08a455ca96194a</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-05-23 09:07:19</sys_updated_on>
+        <sys_updated_on>2019-05-28 08:04:04</sys_updated_on>
     </sys_script_include>
 </record_update>

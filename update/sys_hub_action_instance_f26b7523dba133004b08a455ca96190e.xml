@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_hub_action_instance">
+    <sys_hub_action_instance action="INSERT_OR_UPDATE">
+        <action_inputs/>
+        <action_inputs/>
+        <action_type display_value="Log">0e0ae8c2531003003bf1d9109ec587c8</action_type>
+        <action_type_parent/>
+        <comment/>
+        <compiled_snapshot/>
+        <display_text/>
+        <flow display_value="test Count">a9a0792bdb6133004b08a455ca96194b</flow>
+        <order>2.2</order>
+        <parent_ui_id>861bd88d-a551-43a9-b6e4-21e64f1a1077</parent_ui_id>
+        <sys_class_name>sys_hub_action_instance</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-27 10:19:26</sys_created_on>
+        <sys_id>f26b7523dba133004b08a455ca96190e</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_hub_action_instance_f26b7523dba133004b08a455ca96190e</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-27 10:19:26</sys_updated_on>
+        <ui_id>9910d66e-1282-4ac4-b182-fb1e78496bd9</ui_id>
+    </sys_hub_action_instance>
+    <sys_variable_value action="delete_multiple" query="document_key=f26b7523dba133004b08a455ca96190e"/>
+    <sys_element_mapping action="delete_multiple" query="id=f26b7523dba133004b08a455ca96190e"/>
+    <sys_element_mapping action="INSERT_OR_UPDATE">
+        <field>log_message</field>
+        <id>f26b7523dba133004b08a455ca96190e</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-27 10:19:26</sys_created_on>
+        <sys_id>fe6b7523dba133004b08a455ca961912</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-27 10:19:26</sys_updated_on>
+        <table>var__m_sys_hub_action_input_0e0ae8c2531003003bf1d9109ec587c8</table>
+        <value>Amine count is {{5a969f3d-2771-4431-86ee-2c87d4eaba87.Count}} tables are  or {{861bd88d-a551-43a9-b6e4-21e64f1a1077.item.table_name}}{{861bd88d-a551-43a9-b6e4-21e64f1a1077.item.u_table_name}}</value>
+    </sys_element_mapping>
+</record_update>
