@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope, spModal) {
+        <client_script><![CDATA[function($scope, spModal, $compile, $timeout) {
         /* widget controller */
         var c = this;
+        if (c.options.search_field && c.options.widget_instance_id) {
+                customInput(c.options.search_field, c.options.widget_instance_id);
+                c.data.is_custom_field = true;
+        } else {
+                c.data.is_custom_field = false;
+        }
+
         var item_per_page = 5;
         c.data.table_filtered_by = [];
         c.data.loading = false;
@@ -22,7 +29,7 @@
                         $scope.calculatePages();
                         c.data.sources = [];
                         c.data.all_results.forEach(function (item) {
-                                if ($scope.findIndex(c.data.sources,item.table_name,'name') == -1) {
+                                if ($scope.findIndex(c.data.sources, item.table_name, 'name') == -1) {
                                         //if the table has a filtered by columns append it to sources if not it will not be displayed
                                         var filteredby = [];
                                         c.data.table_filtered_by.forEach(function (t) {
@@ -42,12 +49,12 @@
                                         c.data.sources.push(obj);
                                 } else {
                                         console.log('just adding  ' + item.table_name + ' +1 !');
-                                        var i = $scope.findIndex(c.data.sources,item.table_name,'name');
+                                        var i = $scope.findIndex(c.data.sources, item.table_name, 'name');
                                         c.data.sources[i].number++;
 
                                 }
                         });
-                        $scope.initDyFilters(c.data.all_results,c.data.table_filtered_by);
+                        $scope.initDyFilters(c.data.all_results, c.data.table_filtered_by);
                 });
 
         };
@@ -91,14 +98,14 @@
                         c.data.results = all.slice(0, item_per_page);
                 }
         };
-        $scope.filterItems = function (source_name, column,value) {
-					$scope.data.table_filtered_by.forEach(function(item){
-																								if(item.table_name==source_name)
-																									item.filteredby.forEach(function(f){
-																										if(f.label==column)
-																											column = f.name;
-																									});
-																								});
+        $scope.filterItems = function (source_name, column, value) {
+                $scope.data.table_filtered_by.forEach(function (item) {
+                        if (item.table_name == source_name)
+                                item.filteredby.forEach(function (f) {
+                                        if (f.label == column)
+                                                column = f.name;
+                                });
+                });
                 c.data.show_google = false;
                 if (!source_name) {
                         c.data.results = c.data.all_results;
@@ -171,33 +178,33 @@
                 all.forEach(function (item) {
                         var filter_obj = {};
                         filter.forEach(function (f) {
-                                if(item.sys_class_name==f.table_name){
-																	
-                                        f.filteredby.forEach(function(fby){
-																					console.log(fby.name)
-																					var filter_index = $scope.findIndex(c.data.DyFilters,item.sys_class_name,'table_name');                                           
-																							if(filter_index!=-1){
-																									var i =-1;
-																									if(c.data.DyFilters[filter_index][fby.label]){
-																											i = c.data.DyFilters[filter_index][fby.label].indexOf(item[fby.name]);
-																											if(i==-1)
-																												c.data.DyFilters[filter_index][fby.label].push(item[fby.name]);
-																									}else{
-																										c.data.DyFilters[filter_index][fby.label]=[];
-																										c.data.DyFilters[filter_index][fby.label].push(item[fby.name]);
-																										
-																									}
-                                                       
+                                if (item.sys_class_name == f.table_name) {
 
-																									}else{
+                                        f.filteredby.forEach(function (fby) {
+                                                console.log(fby.name)
+                                                var filter_index = $scope.findIndex(c.data.DyFilters, item.sys_class_name, 'table_name');
+                                                if (filter_index != -1) {
+                                                        var i = -1;
+                                                        if (c.data.DyFilters[filter_index][fby.label]) {
+                                                                i = c.data.DyFilters[filter_index][fby.label].indexOf(item[fby.name]);
+                                                                if (i == -1)
+                                                                        c.data.DyFilters[filter_index][fby.label].push(item[fby.name]);
+                                                        } else {
+                                                                c.data.DyFilters[filter_index][fby.label] = [];
+                                                                c.data.DyFilters[filter_index][fby.label].push(item[fby.name]);
+
+                                                        }
+
+
+                                                } else {
                                                         filter_obj.table_name = item.sys_class_name;
-																												filter_obj[fby.label] = [];
-																												filter_obj[fby.label].push(item[fby.name]);
+                                                        filter_obj[fby.label] = [];
+                                                        filter_obj[fby.label].push(item[fby.name]);
                                                         c.data.DyFilters.push(filter_obj);
                                                 }
-																								
+
                                         })
-                                        
+
                                 }
                         });
                 });
@@ -205,6 +212,36 @@
         /*
         *Helper functions
         */
+        function customInput(name, instanceId) {
+                var selector = "#" + instanceId + " [name='" + name + "']";
+                if (document.querySelector(selector) == null) {
+                        $timeout(function () {
+                                customInput(name, instanceId);
+                        }, 100);
+                } else {
+                        var field = document.querySelector(selector);
+                        $scope.$watch(function () {
+                                return document.querySelector(selector).value;
+
+                        }, function (value) {
+                                var timeout = null;
+                                document.querySelector(selector).onkeyup = function (e) {
+                                        clearTimeout(timeout);
+
+                                        timeout = setTimeout(function () {
+																					
+                                                if (value.trim().length >= 5) {
+                                                        $scope.q = value;
+                                                        $scope.search();
+                                                }
+                                        }, 2000);
+                                }
+
+                        });
+                }
+
+
+        }
         function testFilters(all_result, table_name, column) {
                 var test = false;
                 all_result.forEach(function (item) {
@@ -219,7 +256,7 @@
                 for (var i = min; i <= max; i += step) input.push(i);
                 return input;
         };
-        $scope.findIndex = function (table,value,property) {
+        $scope.findIndex = function (table, value, property) {
                 for (var index = 0; index < table.length; index++) {
                         if (table[index][property] == value)
                                 return index
@@ -239,14 +276,17 @@
                         });
                 return status;
         };
-	$scope.getKeys = function(obj){
-		console.log(Object.keys(obj));
-		return Object.keys(obj);
-	}
-	$scope.getFilterData = function(obj,property){
-		if(property!='table_name')
-		return obj[property];
-	}
+        $scope.aler = function () {
+                alert($scope.q);
+        }
+        $scope.getKeys = function (obj) {
+                console.log(Object.keys(obj));
+                return Object.keys(obj);
+        }
+        $scope.getFilterData = function (obj, property) {
+                if (property != 'table_name')
+                        return obj[property];
+        }
 }]]></client_script>
         <controller_as>c</controller_as>
         <css>.container{
@@ -395,9 +435,45 @@ svg {
         <has_preview>false</has_preview>
         <id>ai_search_clone</id>
         <internal>false</internal>
-        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <link><![CDATA[function link(scope, element, attrs, controller) {
+	var c = controller;
+	
+	var $timeout = $injector.get('$timeout');
+	var $compile = $injector.get('$compile');
+	
+	customInput( c.options.search_field ,c.options.widget_instance_id );
+	console.log("link fn instance ");
+	function customInput(name, instanceId) {
+                var selector = "#" + instanceId + " [name='" + name + "']";
+                if (document.querySelector(selector) == null) {
+									console.log("link fn inside if ");
+                        $timeout(function () {
+                                customInput(name, instanceId);
+                        }, 100);
+                } else {
+												console.log("link fn else ");
+                        var field = document.querySelector(selector);
+                        field.setAttribute('ng-model-options', "{ debounce: 2000 }");    
+												//$compile(field)(field.scope());
+												//	scope.$digest();
+                         //compile(field);
+												//scope.$apply();
+                        
+                }
+
+
+        }
+	function compile(element){
+  var el = angular.element(element);    
+  $scope = el.scope();
+    $injector = el.injector();
+    $injector.invoke(function($compile){
+       $compile(el)($scope)
+    })     
+}
+}]]></link>
         <name>AI search clone</name>
-        <option_schema>[{"displayValue":"search config","name":"search_config","display_value_list":[],"section":"other","label":"search config :","type":"glide_list","value":"x_302527_ai_search_search_config","ed":{"reference":"x_302527_ai_search_search_config"}}]</option_schema>
+        <option_schema>[{"displayValue":"search config","name":"search_config","display_value_list":[],"section":"other","label":"search config :","type":"glide_list","value":"x_302527_ai_search_search_config","ed":{"reference":"x_302527_ai_search_search_config"}},{"hint":"The field on which the search will be executed","name":"search_field","section":"other","label":"Search field","type":"string"},{"displayValue":"Instance","name":"widget_instance_id","section":"other","label":"widget instance id","type":"string","value":"sp_instance","ed":{"reference":"sp_instance"}}]</option_schema>
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
@@ -469,25 +545,25 @@ svg {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-04-15 12:54:22</sys_created_on>
         <sys_id>ae1cca46dbf033004b08a455ca961971</sys_id>
-        <sys_mod_count>667</sys_mod_count>
+        <sys_mod_count>793</sys_mod_count>
         <sys_name>AI search clone</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sp_widget_ae1cca46dbf033004b08a455ca961971</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-06-19 09:00:57</sys_updated_on>
+        <sys_updated_on>2019-07-04 14:27:52</sys_updated_on>
         <template><![CDATA[<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
   integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
 <div class='container' ng-class="{true: 'loading', false: ''}[c.data.loading==true]">
   <!-- input and search button -->
-  <div class="row">
+  <div class="row" ng-if="!c.data.is_custom_field">
     <div class="col-md-offset-2 col-md-8 ">
       <div class="input-group input-group-lg">
         <input type="text" class="form-control search-form" placeholder="Search ..." id="query_text" ng-model="q" ng-model-options="{ debounce: 2000 }"
           ng-change="search()" />
         <div class="input-group-btn">
-          <button type="submit" ng-click="search()" class="btn search-btn"><i class="fas fa-search"></i></button>
+          <button type="submit" ng-click="search(this.value)" class="btn search-btn"><i class="fas fa-search"></i></button>
         </div>
       </div>
     </div>

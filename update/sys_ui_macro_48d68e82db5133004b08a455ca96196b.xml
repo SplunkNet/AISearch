@@ -10,14 +10,14 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-05-10 09:03:02</sys_created_on>
         <sys_id>48d68e82db5133004b08a455ca96196b</sys_id>
-        <sys_mod_count>61</sys_mod_count>
+        <sys_mod_count>71</sys_mod_count>
         <sys_name>search_macro</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_ui_macro_48d68e82db5133004b08a455ca96196b</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-05-27 09:18:37</sys_updated_on>
+        <sys_updated_on>2019-06-21 13:53:51</sys_updated_on>
         <xml><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
@@ -71,11 +71,24 @@
 										<div class="panel-body">
 											<ul class="nav">
 												<li><a ng-click="filterItems(source.sys_class_name)">All</a></li>
-												<li ng-repeat="f in source.filteredby">
-													<a
-														ng-click="filterItems(source.sys_class_name,f.name)">{{ f.label }}</a>
-												</li>
 											</ul>
+												<div ng-repeat="filterObject in DyFilters track by filterObject.table_name">
+                  <div ng-if="filterObject.table_name==source.sys_class_name"   >
+                    <ul class="nav" ng-init="filters = getKeys(filterObject)">
+                     <li ng-repeat="filter in filters track by $index" >
+                       <a ng-if="filter!='table_name'" >
+                         {{ filter }}
+                         <ul class="indent nav" ng-init="filterValue = getFilterData(filterObject,filter)">
+                           <li ng-repeat="value in filterValue">
+                             <a ng-click="filterItems(source.sys_class_name,filter,value)">{{value}}</a>
+                           </li>
+                         </ul>
+                       </a>
+                      </li>
+
+                    </ul>
+                  </div>
+                </div>
 										</div>
 									</div>
 								</div>
@@ -172,7 +185,7 @@
 		</div>
 	</tr>
 	<style>
-	.container{position:relative}.spacer{margin:5px}.not_found{padding:50px;color:#696868}.title_not_found{margin:0;font-size:6em;font-weight:100}.content_not_found{padding:10px;width:95%;font-size:1.5em;line-height:1.4}.filter_nav{margin-top:30px}.filter_nav_elem{margin:10px}.loading{opacity:.5}.search-form{border-radius:30px 0 0 30px!important;border:solid 1px #00bf8f}.search-btn{border-radius:0 30px 30px 0!important;background:#00bf8f}.fa-search{color:#fff}.overlay-div{width:100%;height:100%;z-index:1;position:fixed;top:0;opacity:1;display:flex;justify-content:center;align-items:center}.btn-circle{width:40px;height:40px;border:solid 1px gray;border-radius:35px;background:#fff;line-height:1.33}.btn-circle.selected{width:50px;height:50px;border:solid 2px #00bf8f}
+	.container{position:relative}.spacer{margin:5px}.not_found{padding:50px;color:#696868}.title_not_found{margin:0;font-size:6em;font-weight:100}.content_not_found{padding:10px;width:95%;font-size:1.5em;line-height:1.4}.filter_nav{margin-top:30px}.filter_nav_elem{margin:10px}.loading{opacity:.5}.search-form{border-radius:30px 0 0 30px!important;border:solid 1px #00bf8f}.search-btn{border-radius:0 30px 30px 0!important;background:#00bf8f}.fa-search{color:#fff}.overlay-div{width:100%;height:100%;z-index:1;position:fixed;top:0;opacity:1;display:flex;justify-content:center;align-items:center}.btn-circle{width:40px;height:40px;border:solid 1px gray;border-radius:35px;background:#fff;line-height:1.33}.btn-circle.selected{width:50px;height:50px;border:solid 2px #00bf8f}.indent{text-indent:30px}
 	</style>
 </j:jelly>]]></xml>
     </sys_ui_macro>

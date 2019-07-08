@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="" label="formatter config" language="en" table="x_302527_ai_search_formatter_config">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element/>
+            <help/>
+            <hint/>
+            <label>formatter config</label>
+            <language>en</language>
+            <name>x_302527_ai_search_formatter_config</name>
+            <plural>formatter configs</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2019-07-05 10:41:26</sys_created_on>
+            <sys_id>85767e40db6233004b08a455ca961907</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>formatter config</sys_name>
+            <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+            <sys_update_name>sys_documentation_x_302527_ai_search_formatter_config__en</sys_update_name>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2019-07-05 10:41:26</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

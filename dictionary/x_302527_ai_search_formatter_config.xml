@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="formatter config" max_length="40" name="x_302527_ai_search_formatter_config" type="collection">
+        <element dependent="table_name" dependent_on_field="table_name" label="field name" max_length="32" name="field_name" type="field_name" use_dependent_field="true"/>
+        <element label="formatter" max_length="32" name="formatter" reference="sys_ui_formatter" type="reference"/>
+        <element label="table name" max_length="32" name="table_name" type="table_name"/>
+        <index name="index">
+            <element name="formatter"/>
+        </index>
+        <index name="index2">
+            <element name="table_name"/>
+        </index>
+        <index name="index3">
+            <element name="field_name"/>
+        </index>
+    </element>
+</database>
