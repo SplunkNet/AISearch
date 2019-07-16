@@ -227,6 +227,28 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce', function ($scope,$tim
         }
         if (document.activeElement.toString() == '[object HTMLButtonElement]') { document.activeElement.blur(); }
     };
+	$scope.sort = function(){
+		$scope.sort_option = "relevance";
+        $scope.all_results.sort(function (a, b) {
+            var x = a.ir_query_score;
+            var y = b.ir_query_score;
+            return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+        });
+        $scope.filterItems();
+	};
+	$scope.sortByDate = function(inverse){
+		$scope.all_results.sort(function (a, b) {
+            return new Date(b.sys_created_on) - new Date(a.sys_created_on);
+        });
+        if (inverse){
+					
+					$scope.sort_option = "dateDesc";
+					$scope.all_results.reverse();
+				}else
+					$scope.sort_option = "date";
+		 $scope.filterItems();
+				
+	};
     /*
     *Helper functions
     */
@@ -252,13 +274,6 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce', function ($scope,$tim
 	   }  
        
    }
-	function readInput(field_name){
-		var element = g_form.getElement(field_name);
-		$timeout(function () {
-								console.log("value is : "+element.value);
-                                readInput(field_name);
-                        }, 100);
-	}
 	 function notifyMe(scope, expr, callbackFn) {
     var oldValue = scope.$eval(expr);
     setInterval(function() {
@@ -439,14 +454,14 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce', function ($scope,$tim
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-05-10 09:54:44</sys_created_on>
         <sys_id>eb4292cadb5133004b08a455ca961915</sys_id>
-        <sys_mod_count>120</sys_mod_count>
+        <sys_mod_count>124</sys_mod_count>
         <sys_name>x_302527_ai_search.search_macro_client</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_ui_script_eb4292cadb5133004b08a455ca961915</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-07-10 08:41:40</sys_updated_on>
+        <sys_updated_on>2019-07-16 13:02:22</sys_updated_on>
         <ui_type>10</ui_type>
         <use_scoped_format>false</use_scoped_format>
     </sys_ui_script>

@@ -14,20 +14,35 @@ SearchUtils.prototype = {
         //columns will be a string of sys_ids divided by ','
 		query=query+"";
 		var glideutils = new GlideUtils();
-        var labels = ['sys_id','sys_class_name','short_description','close_notes'];
 		var result = [];
 		var obj = {};
+		var columns_GR = [];
 		var source_limit = gs.getProperty('x_302527_ai_search.source_limit');
         if(columns){
-            columns_names = [];
+            
             columns=columns.split(',');
             
             columns.forEach(function(res) {
                 var columns_record = new GlideRecord('sys_dictionary');
                 columns_record.get(res);
-                columns_names.push(columns_record.element);
+                var obj = {};
+                obj.name = columns_record.element+"";
+                if(columns_record.getDisplayValue('attributes').indexOf('ts_weight')!=-1){
+                    var attributes = columns_record.getDisplayValue('attributes').split(',');
+                    attributes.forEach(function(item){
+                        if(item.indexOf('ts_weight')!=-1){
+                            obj.weight = item.split('ts_weight=')[1];
+                        }
+                    });
+                    
+                }else{
+							obj.weight = 1;
+						}
+                
+                columns_GR.push(obj);
             });
     
+			gs.warn('columns : '+JSON.stringify(columns_GR));
             //split query text into words
             var query_text = q.split(' ');
 			
@@ -41,7 +56,7 @@ SearchUtils.prototype = {
 				query_string_and += query.substr(0,(query.length-2));
 			}
 				
-            for (var i = 0; i < columns_names.length; i++) {
+            for (var i = 0; i < columns_GR.length; i++) {
                 //append AND operator between colummns
                 if( i != 0){
                     query_string_or += '^OR';
@@ -50,20 +65,20 @@ SearchUtils.prototype = {
     
                 //build the and query
                 if(query_string_and.length==0)
-                    query_string_and = columns_names[i]+'LIKE'+q;
+                    query_string_and = columns_GR[i].name+'LIKE'+q;
                 else
-                    query_string_and += columns_names[i]+'LIKE'+q;
+                    query_string_and += columns_GR[i].name+'LIKE'+q;
                 
                 //build the or query ( or operator put in between every word )
                 for (var index = 0; index < query_text.length; index++) {
                     if(query_string_or.length==0)
-                        query_string_or = columns_names[i]+'LIKE'+query_text[index];
+                        query_string_or = columns_GR[i].name+'LIKE'+query_text[index];
                     
                     else  {
                         if(index == 0)
-                            query_string_or += columns_names[i]+'LIKE'+query_text[index];
+                            query_string_or += columns_GR[i].name+'LIKE'+query_text[index];
                         else
-                            query_string_or += '^OR'+columns_names[i]+'LIKE'+query_text[index];
+                            query_string_or += '^OR'+columns_GR[i].name+'LIKE'+query_text[index];
                     } 
                         
                     
@@ -79,13 +94,13 @@ SearchUtils.prototype = {
 			gs.warn("final  : "+table_name+" and ;"+query_string_and);
 			
 			
-            var result_and = new GlideRecord(table_name);
+            var result_and = new GlideRecordSecure(table_name);
             result_and.addEncodedQuery(query_string_and);
 			result_and.setLimit(source_limit);
             result_and.query();
             //for now we return only the short_dscription and the resolution note
             while(result_and.next()){
-                obj = glideutils.getFormatedObj(result_and,table_name,q);
+                obj = glideutils.getFormatedObj(result_and,table_name,columns_GR,q);
 				obj.display_title = obj[title_field];
 				obj.display_description = obj[description_field];
                 obj.u_query_type = 'AND';
@@ -93,13 +108,13 @@ SearchUtils.prototype = {
             }
     
             //query by OR 
-            var result_or = new GlideRecord(table_name);
+            var result_or = new GlideRecordSecure(table_name);
             result_or.addEncodedQuery(query_string_or);
 			result_or.setLimit(source_limit);
             result_or.query();
             
             while(result_or.next()){
-                obj = glideutils.getFormatedObj(result_or,table_name,q);
+                obj = glideutils.getFormatedObj(result_or,table_name,columns_GR,q);
 				obj.display_title = obj[title_field];
 				obj.display_description = obj[description_field];
                 obj.u_query_type = 'OR';
@@ -116,7 +131,7 @@ SearchUtils.prototype = {
             rec.addEncodedQuery(query_string);
             rec.query();
             while(rec.next()){
-                obj = glideutils.getFormatedObj(rec,table_name,q);
+                obj = glideutils.getFormatedObj(rec,table_name,columns_GR,q);
 				obj.display_title = obj[title_field];
 				obj.display_description = obj[description_field];
                 result.push(obj);
@@ -217,13 +232,13 @@ SearchUtils.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-15 08:37:48</sys_created_on>
         <sys_id>dbf7698cdb1033004b08a455ca96194a</sys_id>
-        <sys_mod_count>115</sys_mod_count>
+        <sys_mod_count>124</sys_mod_count>
         <sys_name>SearchUtils</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_dbf7698cdb1033004b08a455ca96194a</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-06-24 10:36:46</sys_updated_on>
+        <sys_updated_on>2019-07-16 07:29:24</sys_updated_on>
     </sys_script_include>
 </record_update>

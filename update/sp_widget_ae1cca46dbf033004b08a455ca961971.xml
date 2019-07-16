@@ -1,292 +1,320 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope, spModal, $compile, $timeout) {
-        /* widget controller */
-        var c = this;
-        if (c.options.search_field && c.options.widget_instance_id) {
-                customInput(c.options.search_field, c.options.widget_instance_id);
-                c.data.is_custom_field = true;
-        } else {
-                c.data.is_custom_field = false;
-        }
+        <client_script><![CDATA[function($scope, spModal, $timeout) {
+    /* widget controller */
+    var c = this;
+    if (c.options.search_field && c.options.widget_instance_id) {
+        customInput(c.options.search_field, c.options.widget_instance_id);
+        c.data.is_custom_field = true;
+    } else {
+        c.data.is_custom_field = false;
+    }
 
-        var item_per_page = 5;
-        c.data.table_filtered_by = [];
-        c.data.loading = false;
-        $scope.search = function () {
-                if ($scope.q.trim().length < 5)
-                        return;
-                c.data.loading = true;
-                c.data.action = 'search';
-                c.data.q = $scope.q;
-                c.server.update().then(function (res) {
-                        c.data.loading = false;
-                        c.data.g_res = res.google_res;
-                        c.data.g_page = 1;
-                        c.data.table_filtered_by = res.table_filtered_by;
-                        c.data.all_results = res.res;
-                        $scope.calculatePages();
-                        c.data.sources = [];
-                        c.data.all_results.forEach(function (item) {
-                                if ($scope.findIndex(c.data.sources, item.table_name, 'name') == -1) {
-                                        //if the table has a filtered by columns append it to sources if not it will not be displayed
-                                        var filteredby = [];
-                                        c.data.table_filtered_by.forEach(function (t) {
-                                                console.log(t.table_name + ' and ' + item.sys_class_name);
-                                                if (t.table_name == item.sys_class_name) {
-                                                        //remove filters that gives no results 
-                                                        t.filteredby.forEach(function (i) {
-                                                                if (testFilters(c.data.all_results, item.sys_class_name, i.name))
-                                                                        filteredby.push(i);
-                                                        });
-                                                }
-
-                                        });
-                                        var obj = { name: item.table_name, number: 1, sys_class_name: item.sys_class_name }
-                                        if (filteredby)
-                                                obj.filteredby = filteredby;
-                                        c.data.sources.push(obj);
-                                } else {
-                                        console.log('just adding  ' + item.table_name + ' +1 !');
-                                        var i = $scope.findIndex(c.data.sources, item.table_name, 'name');
-                                        c.data.sources[i].number++;
-
-                                }
-                        });
-                        $scope.initDyFilters(c.data.all_results, c.data.table_filtered_by);
-                });
-
-        };
-
-        $scope.showMore = function ($event, parag, e) {
-                if ($event.target.innerHTML == 'show more') {
-                        $event.target.innerHTML = 'show less';
-                        e.rs = parag;
-                } else if ($event.target.innerHTML == 'show less') {
-                        $event.target.innerHTML = 'show more';
-                        var last_space = parag.substr(0, 200).lastIndexOf(' ');
-                        e.rs = parag.substr(0, last_space);
-                }
-
-        };
-        $scope.getPage = function (page, res) {
-                if (page >= 1 && page <= c.data.num_page) {
-                        var all = res || c.data.all_results;
-                        c.data.page = page;
-                        if (c.data.page == c.data.num_page)
-                                c.data.results = all.slice((c.data.page - 1) * item_per_page, all.length);
-                        else
-                                c.data.results = all.slice((c.data.page - 1) * item_per_page, c.data.page * item_per_page);
-                }
-                if (document.activeElement.toString() == '[object HTMLButtonElement]') { document.activeElement.blur(); }
-
-        };
-        $scope.calculatePages = function (res) {
-                var all = res || c.data.all_results;
-                if (all.length < 6) {
-                        c.data.num_page = 1;
-                        c.data.page = 1;
-                        c.data.results = all;
-                }
-                else {
-                        if (all.length % item_per_page == 0)
-                                c.data.num_page = all.length / item_per_page;
-                        else
-                                c.data.num_page = parseInt(all.length / item_per_page) + 1;
-                        c.data.page = 1;
-                        c.data.results = all.slice(0, item_per_page);
-                }
-        };
-        $scope.filterItems = function (source_name, column, value) {
-                $scope.data.table_filtered_by.forEach(function (item) {
-                        if (item.table_name == source_name)
-                                item.filteredby.forEach(function (f) {
-                                        if (f.label == column)
-                                                column = f.name;
-                                });
-                });
-                c.data.show_google = false;
-                if (!source_name) {
-                        c.data.results = c.data.all_results;
-                        c.data.filtered = c.data.all_results;
-                        $scope.calculatePages();
-                } else {
-                        if (column) {
-                                filtered = [];
-                                c.data.all_results.forEach(function (item) {
-                                        console.log($scope.str_contains(item[column + ''], value));
-                                        if (item.sys_class_name == source_name && $scope.str_contains(item[column + ''], value))
-                                                filtered.push(item);
-                                });
-                                console.log(JSON.stringify(filtered));
-                                c.data.filtered = filtered;
-                                $scope.calculatePages(filtered);
-                        } else {
-                                filtered = [];
-                                c.data.all_results.forEach(function (item) {
-                                        if (item.sys_class_name == source_name)
-                                                filtered.push(item);
-                                });
-                                c.data.filtered = filtered;
-                                $scope.calculatePages(filtered);
+    var item_per_page = 5;
+    c.data.table_filtered_by = [];
+    c.data.loading = false;
+    $scope.search = function () {
+        if ($scope.q.trim().length < 5)
+            return;
+        c.data.loading = true;
+        c.data.action = 'search';
+        c.data.q = $scope.q;
+        c.server.update().then(function (res) {
+            c.data.loading = false;
+            c.data.g_res = res.google_res;
+            c.data.g_page = 1;
+            c.data.table_filtered_by = res.table_filtered_by;
+            c.data.all_results = res.res;
+            $scope.calculatePages();
+            $scope.sort();
+						c.data.sources = [];
+            c.data.all_results.forEach(function (item) {
+                if ($scope.findIndex(c.data.sources, item.table_name, 'name') == -1) {
+                    //if the table has a filtered by columns append it to sources if not it will not be displayed
+                    var filteredby = [];
+                    c.data.table_filtered_by.forEach(function (t) {
+                        if (t.table_name == item.sys_class_name) {
+                            //remove filters that gives no results 
+                            t.filteredby.forEach(function (i) {
+                                if (testFilters(c.data.all_results, item.sys_class_name, i.name))
+                                    filteredby.push(i);
+                            });
                         }
-                }
-        };
-        $scope.showG_res = function () {
-                c.data.show_google = true;
-        };
-        $scope.next = function () {
-                if (c.data.g_res.queries.hasOwnProperty('nextPage')) {
-                        c.data.loading = true;
-                        c.data.action = "google";
-                        c.data.google = 'next';
-                        c.data.start = c.data.g_res.queries.nextPage[0].startIndex;
-                        c.server.update().then(function (res) {
-                                c.data.loading = false;
-                                c.data.g_res = res.google_res;
-                                c.data.g_page++;
-                        });
-                }
-        };
-        $scope.prev = function () {
-                if (c.data.g_res.queries.hasOwnProperty('previousPage')) {
-                        c.data.loading = true;
-                        c.data.action = "google";
-                        c.data.google = 'previous';
-                        c.data.start = c.data.g_res.queries.previousPage[0].startIndex;
-                        c.server.update().then(function (res) {
-                                c.data.loading = false;
-                                c.data.g_res = res.google_res;
-                                c.data.g_page--;
-                        });
 
-                }
-        };
-        $scope.pop = function (obj) {
-                spModal.open({
-                        title: obj.table_name,
-                        size: 'lg',
-                        widget: 'widget-form',
-                        widgetInput: { table: obj.sys_class_name, sys_id: obj.sys_id }
-                }).then(function () {
-                        console.log('widget dismissed');
-                });
-        }
-        $scope.initDyFilters = function (all, filter) {
-                c.data.DyFilters = [];
-                all.forEach(function (item) {
-                        var filter_obj = {};
-                        filter.forEach(function (f) {
-                                if (item.sys_class_name == f.table_name) {
-
-                                        f.filteredby.forEach(function (fby) {
-                                                console.log(fby.name)
-                                                var filter_index = $scope.findIndex(c.data.DyFilters, item.sys_class_name, 'table_name');
-                                                if (filter_index != -1) {
-                                                        var i = -1;
-                                                        if (c.data.DyFilters[filter_index][fby.label]) {
-                                                                i = c.data.DyFilters[filter_index][fby.label].indexOf(item[fby.name]);
-                                                                if (i == -1)
-                                                                        c.data.DyFilters[filter_index][fby.label].push(item[fby.name]);
-                                                        } else {
-                                                                c.data.DyFilters[filter_index][fby.label] = [];
-                                                                c.data.DyFilters[filter_index][fby.label].push(item[fby.name]);
-
-                                                        }
-
-
-                                                } else {
-                                                        filter_obj.table_name = item.sys_class_name;
-                                                        filter_obj[fby.label] = [];
-                                                        filter_obj[fby.label].push(item[fby.name]);
-                                                        c.data.DyFilters.push(filter_obj);
-                                                }
-
-                                        })
-
-                                }
-                        });
-                });
-        };
-        /*
-        *Helper functions
-        */
-        function customInput(name, instanceId) {
-                var selector = "#" + instanceId + " [name='" + name + "']";
-                if (document.querySelector(selector) == null) {
-                        $timeout(function () {
-                                customInput(name, instanceId);
-                        }, 100);
+                    });
+                    var obj = { name: item.table_name, number: 1, sys_class_name: item.sys_class_name }
+                    if (filteredby)
+                        obj.filteredby = filteredby;
+                    c.data.sources.push(obj);
                 } else {
-                        var field = document.querySelector(selector);
-                        $scope.$watch(function () {
-                                return document.querySelector(selector).value;
+                    var i = $scope.findIndex(c.data.sources, item.table_name, 'name');
+                    c.data.sources[i].number++;
 
-                        }, function (value) {
-                                var timeout = null;
-                                document.querySelector(selector).onkeyup = function (e) {
-                                        clearTimeout(timeout);
-
-                                        timeout = setTimeout(function () {
-																					
-                                                if (value.trim().length >= 5) {
-                                                        $scope.q = value;
-                                                        $scope.search();
-                                                }
-                                        }, 2000);
-                                }
-
-                        });
                 }
+            });
+            $scope.initDyFilters(c.data.all_results, c.data.table_filtered_by);
+        });
 
+    };
 
+    $scope.showMore = function ($event, parag, e) {
+        if ($event.target.innerHTML == 'show more') {
+            $event.target.innerHTML = 'show less';
+            e.rs = parag;
+        } else if ($event.target.innerHTML == 'show less') {
+            $event.target.innerHTML = 'show more';
+            var last_space = parag.substr(0, 200).lastIndexOf(' ');
+            e.rs = parag.substr(0, last_space);
         }
-        function testFilters(all_result, table_name, column) {
-                var test = false;
-                all_result.forEach(function (item) {
-                        if (item.sys_class_name == table_name && $scope.str_contains(item[column + ''], $scope.q))
-                                test = true;
+
+    };
+    $scope.getPage = function (page, res) {
+        if (page >= 1 && page <= c.data.num_page) {
+            var all = res || c.data.all_results;
+            c.data.page = page;
+            if (c.data.page == c.data.num_page)
+                c.data.results = all.slice((c.data.page - 1) * item_per_page, all.length);
+            else
+                c.data.results = all.slice((c.data.page - 1) * item_per_page, c.data.page * item_per_page);
+        }
+        if (document.activeElement.toString() == '[object HTMLButtonElement]') { document.activeElement.blur(); }
+
+    };
+    $scope.calculatePages = function (res) {
+        var all = res || c.data.all_results;
+        if (all.length < 6) {
+            c.data.num_page = 1;
+            c.data.page = 1;
+            c.data.results = all;
+        }
+        else {
+            if (all.length % item_per_page == 0)
+                c.data.num_page = all.length / item_per_page;
+            else
+                c.data.num_page = parseInt(all.length / item_per_page) + 1;
+            c.data.page = 1;
+            c.data.results = all.slice(0, item_per_page);
+        }
+    };
+    $scope.filterItems = function (source_name, column, value) {
+        $scope.data.table_filtered_by.forEach(function (item) {
+            if (item.table_name == source_name)
+                item.filteredby.forEach(function (f) {
+                    if (f.label == column)
+                        column = f.name;
                 });
-                return test;
+        });
+        c.data.show_google = false;
+        if (!source_name) {
+            c.data.results = c.data.all_results;
+            c.data.filtered = c.data.all_results;
+            $scope.calculatePages();
+        } else {
+            if (column) {
+                filtered = [];
+                c.data.all_results.forEach(function (item) {
+                    console.log($scope.str_contains(item[column + ''], value));
+                    if (item.sys_class_name == source_name && $scope.str_contains(item[column + ''], value))
+                        filtered.push(item);
+                });
+                console.log(JSON.stringify(filtered));
+                c.data.filtered = filtered;
+                $scope.calculatePages(filtered);
+            } else {
+                filtered = [];
+                c.data.all_results.forEach(function (item) {
+                    if (item.sys_class_name == source_name)
+                        filtered.push(item);
+                });
+                c.data.filtered = filtered;
+                $scope.calculatePages(filtered);
+            }
         }
-        $scope.range = function (min, max, step) {
-                step = step || 1;
-                var input = [];
-                for (var i = min; i <= max; i += step) input.push(i);
-                return input;
-        };
-        $scope.findIndex = function (table, value, property) {
-                for (var index = 0; index < table.length; index++) {
-                        if (table[index][property] == value)
-                                return index
+    };
+    $scope.showG_res = function () {
+        c.data.show_google = true;
+    };
+    $scope.next = function () {
+        if (c.data.g_res.queries.hasOwnProperty('nextPage')) {
+            c.data.loading = true;
+            c.data.action = "google";
+            c.data.google = 'next';
+            c.data.start = c.data.g_res.queries.nextPage[0].startIndex;
+            c.server.update().then(function (res) {
+                c.data.loading = false;
+                c.data.g_res = res.google_res;
+                c.data.g_page++;
+            });
+        }
+    };
+    $scope.prev = function () {
+        if (c.data.g_res.queries.hasOwnProperty('previousPage')) {
+            c.data.loading = true;
+            c.data.action = "google";
+            c.data.google = 'previous';
+            c.data.start = c.data.g_res.queries.previousPage[0].startIndex;
+            c.server.update().then(function (res) {
+                c.data.loading = false;
+                c.data.g_res = res.google_res;
+                c.data.g_page--;
+            });
+
+        }
+    };
+    $scope.pop = function (obj) {
+        spModal.open({
+            title: obj.table_name,
+            size: 'lg',
+            widget: 'widget-form',
+            widgetInput: { table: obj.sys_class_name, sys_id: obj.sys_id }
+        }).then(function () {
+            console.log('widget dismissed');
+        });
+    }
+    $scope.initDyFilters = function (all, filter) {
+        c.data.DyFilters = [];
+        all.forEach(function (item) {
+            var filter_obj = {};
+            filter.forEach(function (f) {
+                if (item.sys_class_name == f.table_name) {
+
+                    f.filteredby.forEach(function (fby) {
+                        console.log(fby.name)
+                        var filter_index = $scope.findIndex(c.data.DyFilters, item.sys_class_name, 'table_name');
+                        if (filter_index != -1) {
+                            var i = -1;
+                            if (c.data.DyFilters[filter_index][fby.label]) {
+                                i = c.data.DyFilters[filter_index][fby.label].indexOf(item[fby.name]);
+                                if (i == -1)
+                                    c.data.DyFilters[filter_index][fby.label].push(item[fby.name]);
+                            } else {
+                                c.data.DyFilters[filter_index][fby.label] = [];
+                                c.data.DyFilters[filter_index][fby.label].push(item[fby.name]);
+
+                            }
+
+
+                        } else {
+                            filter_obj.table_name = item.sys_class_name;
+                            filter_obj[fby.label] = [];
+                            filter_obj[fby.label].push(item[fby.name]);
+                            c.data.DyFilters.push(filter_obj);
+                        }
+
+                    })
 
                 }
-                return -1;
-        };
-        $scope.str_contains = function (str, q) {
-                var status = false;
-                var t = q.split(' ');
-                if (str)
-                        t.forEach(function (item) {
-                                if (str.toLowerCase().includes(item.toLowerCase())) {
-                                        status = true;
-                                }
+            });
+        });
+    };
+    /*
+    *Helper functions
+    */
+    function customInput(name, instanceId) {
+        var selector = "#" + instanceId + " [name='" + name + "']";
+        if (document.querySelector(selector) == null) {
+            $timeout(function () {
+                customInput(name, instanceId);
+            }, 100);
+        } else {
+            var field = document.querySelector(selector);
+            $scope.$watch(function () {
+                return document.querySelector(selector).value;
 
-                        });
-                return status;
-        };
-        $scope.aler = function () {
-                alert($scope.q);
+            }, function (value) {
+                var timeout = null;
+                document.querySelector(selector).onkeyup = function (e) {
+                    clearTimeout(timeout);
+
+                    timeout = setTimeout(function () {
+
+                        if (value.trim().length >= 5) {
+                            $scope.q = value;
+                            $scope.search();
+                        }
+                    }, 2000);
+                }
+
+            });
         }
-        $scope.getKeys = function (obj) {
-                console.log(Object.keys(obj));
-                return Object.keys(obj);
+
+
+    }
+    function testFilters(all_result, table_name, column) {
+        var test = false;
+        all_result.forEach(function (item) {
+            if (item.sys_class_name == table_name && $scope.str_contains(item[column + ''], $scope.q))
+                test = true;
+        });
+        return test;
+    }
+    $scope.sort = function () {
+        
+				c.data.sort_option = "relevance";
+        c.data.all_results.sort(function (a, b) {
+            var x = a.ir_query_score;
+            var y = b.ir_query_score;
+            return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+        });
+        $scope.filterItems();
+
+    }
+
+
+    $scope.sortByDate = function (inverse) {
+
+        c.data.all_results.sort(function (a, b) {
+            return new Date(b.sys_created_on) - new Date(a.sys_created_on);
+        });
+        if (inverse){
+					
+					c.data.sort_option = "dateDesc";
+					c.data.all_results.reverse();
+				}else
+					c.data.sort_option = "date";
+				$scope.filterItems();
+            
+    }
+
+
+    $scope.range = function (min, max, step) {
+        step = step || 1;
+        var input = [];
+        for (var i = min; i <= max; i += step) input.push(i);
+        return input;
+    };
+    $scope.findIndex = function (table, value, property) {
+        for (var index = 0; index < table.length; index++) {
+            if (table[index][property] == value)
+                return index
+
         }
-        $scope.getFilterData = function (obj, property) {
-                if (property != 'table_name')
-                        return obj[property];
-        }
+        return -1;
+    };
+    $scope.str_contains = function (str, q) {
+        var status = false;
+        var t = q.split(' ');
+        if (str)
+            t.forEach(function (item) {
+                if (str.toLowerCase().includes(item.toLowerCase())) {
+                    status = true;
+                }
+
+            });
+        return status;
+    };
+    $scope.aler = function () {
+        alert($scope.q);
+    }
+    $scope.getKeys = function (obj) {
+        console.log(Object.keys(obj));
+        return Object.keys(obj);
+    }
+    $scope.getFilterData = function (obj, property) {
+        if (property != 'table_name')
+            return obj[property];
+    }
 }]]></client_script>
         <controller_as>c</controller_as>
         <css>.container{
@@ -356,6 +384,12 @@ opacity:.5;
     width: 50px;
     height: 50px;
   border : solid 2px #00bf8f;
+}
+.badge{
+  margin-right : 5px;
+}
+.badge.active{
+	background-color : #00bf8f !important;
 }
 $transition-duration: 2s;
 $path-length: 157px; // Retrieved using SVG's getTotalLength()
@@ -436,41 +470,7 @@ svg {
         <id>ai_search_clone</id>
         <internal>false</internal>
         <link><![CDATA[function link(scope, element, attrs, controller) {
-	var c = controller;
 	
-	var $timeout = $injector.get('$timeout');
-	var $compile = $injector.get('$compile');
-	
-	customInput( c.options.search_field ,c.options.widget_instance_id );
-	console.log("link fn instance ");
-	function customInput(name, instanceId) {
-                var selector = "#" + instanceId + " [name='" + name + "']";
-                if (document.querySelector(selector) == null) {
-									console.log("link fn inside if ");
-                        $timeout(function () {
-                                customInput(name, instanceId);
-                        }, 100);
-                } else {
-												console.log("link fn else ");
-                        var field = document.querySelector(selector);
-                        field.setAttribute('ng-model-options', "{ debounce: 2000 }");    
-												//$compile(field)(field.scope());
-												//	scope.$digest();
-                         //compile(field);
-												//scope.$apply();
-                        
-                }
-
-
-        }
-	function compile(element){
-  var el = angular.element(element);    
-  $scope = el.scope();
-    $injector = el.injector();
-    $injector.invoke(function($compile){
-       $compile(el)($scope)
-    })     
-}
 }]]></link>
         <name>AI search clone</name>
         <option_schema>[{"displayValue":"search config","name":"search_config","display_value_list":[],"section":"other","label":"search config :","type":"glide_list","value":"x_302527_ai_search_search_config","ed":{"reference":"x_302527_ai_search_search_config"}},{"hint":"The field on which the search will be executed","name":"search_field","section":"other","label":"Search field","type":"string"},{"displayValue":"Instance","name":"widget_instance_id","section":"other","label":"widget instance id","type":"string","value":"sp_instance","ed":{"reference":"sp_instance"}}]</option_schema>
@@ -499,7 +499,6 @@ svg {
 	while(search_sources.next()){
 		if(search_sources.source.sys_class_name=='x_302527_ai_search_table_source'){
 			var columns_names = [];
-			gs.warn("amine "+search_sources.source.filtered_by);
 			if(search_sources.source.filtered_by)  {  
 				var columns=search_sources.source.filtered_by.split(',');  
 				columns.forEach(function(res) {
@@ -509,7 +508,6 @@ svg {
 				});
 				var obj={table_name:search_sources.source.u_table_name+'',filteredby:columns_names};
 				data.table_filtered_by.push(obj);
-				gs.warn("amine : "+JSON.stringify(obj));
 			}
 		}
 	}
@@ -545,25 +543,25 @@ svg {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-04-15 12:54:22</sys_created_on>
         <sys_id>ae1cca46dbf033004b08a455ca961971</sys_id>
-        <sys_mod_count>793</sys_mod_count>
+        <sys_mod_count>839</sys_mod_count>
         <sys_name>AI search clone</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sp_widget_ae1cca46dbf033004b08a455ca961971</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-07-04 14:27:52</sys_updated_on>
+        <sys_updated_on>2019-07-16 12:59:15</sys_updated_on>
         <template><![CDATA[<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
   integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
 <div class='container' ng-class="{true: 'loading', false: ''}[c.data.loading==true]">
   <!-- input and search button -->
-  <div class="row" ng-if="!c.data.is_custom_field">
+  <div class="row" ng-show="!c.data.is_custom_field">
     <div class="col-md-offset-2 col-md-8 ">
       <div class="input-group input-group-lg">
-        <input type="text" class="form-control search-form" placeholder="Search ..." id="query_text" ng-model="q" ng-model-options="{ debounce: 2000 }"
+        <input type="text" class="form-control search-form" placeholder="Search ..." name="q" ng-model="q" ng-model-options="{ debounce: 2000 }"
           ng-change="search()" />
         <div class="input-group-btn">
-          <button type="submit" ng-click="search(this.value)" class="btn search-btn"><i class="fas fa-search"></i></button>
+          <button type="submit" ng-click="search()" class="btn search-btn"><i class="fas fa-search"></i></button>
         </div>
       </div>
     </div>
@@ -632,10 +630,24 @@ svg {
     </div>
     <!-- regular results goes here  -->
     <div ng-if=" !c.data.show_google || c.data.show_google==false" class="col-md-10 list-group filter_nav">
+      <div ng-if="c.data.all_results.length >0" class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+              Sort By : 
+              <a ng-click="sortByDate(false)"> <span class=" pull-right badge" ng-class="{true: 'active', false: ''}[c.data.sort_option=='date']">Latest</span></a>
+              <a ng-click="sortByDate(true)"> <span class=" pull-right badge" ng-class="{true: 'active', false: ''}[c.data.sort_option=='dateDesc']">Earliest</span></a>
+              <a ng-click="sort()"> <span class=" pull-right badge" ng-class="{true: 'active', false: ''}[c.data.sort_option=='relevance']">Relevance</span></a>
+            </h4>
+          </div>
+        </div>
       <div ng-repeat='result in c.data.results' class='list-group-item'>
         <div class="row">
           <div class="col-md-8">
-            <h4 ng-bind-html="result.display_title">{{result.display_title}}</h4>
+            <h4 ng-bind-html="result.display_title">{{result.display_title}} </h4><br>
+            <h3>
+              {{result.ir_query_score}} | 
+              {{result.sys_created_on}}
+            </h3>
           </div>
           <a class='col-md-2' href="{{result.link1}}">open in backend</a>
           <a class='col-md-2' ng-click="pop(result)" href="">Preview </a>

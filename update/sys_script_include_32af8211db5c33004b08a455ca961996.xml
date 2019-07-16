@@ -10,13 +10,26 @@
 GlideUtils.prototype = {
     initialize: function() {
     },
-	getFormatedObj : function(rec,table_name,q){
+	getFormatedObj : function(rec,table_name,columns_GR,q){
 		var ctx = this ;
 		var fields = this.getColumns(table_name);
 		var obj ={};
+		var score;
+		if(!rec.getDisplayValue('ir_query_score')){
+			gs.warn('no score found !');
+			score = 0;
+				columns_GR.forEach(function(item){
+					gs.warn('start calculate');
+					var res = ctx.calculate(rec.getDisplayValue(item.name+''),q,item.weight);
+					if(res)
+						score += res ;
+				});
+			gs.warn('after calculate : '+score);
+					obj['ir_query_score'] = score;
+				}
+		
 		fields.forEach(function(item){
 			if(item){
-				
 				var highlighted_text = ctx.highlight(rec.getDisplayValue(item+''),q);
 				obj[item]= highlighted_text;
 				obj['table_name']=rec.getDisplayValue('sys_class_name');
@@ -78,19 +91,69 @@ GlideUtils.prototype = {
 		});
 		return text;
     },
+	calculate : function(phrase,word,weight){
+		gs.warn('calculate launched with '+phrase+' and '+word+' weight '+weight );
+		var ctx = this;
+	var score = 0;
+	var seq_score = ctx.sequence(phrase,word)*weight;
+	score +=seq_score;
+	var words = word.split(' ');
+	words.forEach(function(item){
+		score +=(ctx.occurence(phrase,item)*weight);
+	});
+		gs.warn("inside Calculate : "+score);
+	return score;
+},
+sequence : function(phrase,q){
+	var ctx = this;
+	var score = 0;
+		q = q.split(' ');
+		var max_gram = q.length;
+		if(max_gram ==0 || max_gram ==1){
+			return 0;
+		}else {
+			for (var i = max_gram; i > 0; i--) {
+				var ng = ctx.ngrams(q,i);
+				ng.forEach(function(item){
+					var str = "";
+					str = item.join(' ');
+					if (ctx.occurence(phrase, str)!=0) {
+						score = Math.pow(10, i);
+					return ;
+				}
+
+				});
+				if(score!=0)
+					return score;
+			}
+		}
+		
+},
+ngrams : function(a, n) {
+  var res = [];
+		for (var i = 0; i < a.length; i++) {
+		var ngram = a.slice(i, i + n);
+		if(ngram.length==n)
+        	res.push(ngram);
+	}
+	return res;
+},
+ occurence : function(phrase, word){
+	return (phrase.match(new RegExp("\\b" + word + "\\b", 'gi'))||[]).length;
+},
     type: 'GlideUtils'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-19 08:47:13</sys_created_on>
         <sys_id>32af8211db5c33004b08a455ca961996</sys_id>
-        <sys_mod_count>35</sys_mod_count>
+        <sys_mod_count>61</sys_mod_count>
         <sys_name>GlideUtils</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_32af8211db5c33004b08a455ca961996</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-06-13 09:15:37</sys_updated_on>
+        <sys_updated_on>2019-07-16 12:24:41</sys_updated_on>
     </sys_script_include>
 </record_update>
