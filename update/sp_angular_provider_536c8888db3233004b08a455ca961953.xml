@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="INSERT_OR_UPDATE">
+        <name>openInSp</name>
+        <script><![CDATA[function openInSp() {
+  return {
+    restrict: 'A',
+    scope: {test:'='},
+    link: function(scope,element,ctrl) {
+		console.log("testing !"+ctrl.test);
+		element.bind('click',function(){
+			console.log("test is here !!!!!!!");
+		});
+    }
+ };
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-07-17 08:38:06</sys_created_on>
+        <sys_id>536c8888db3233004b08a455ca961953</sys_id>
+        <sys_mod_count>9</sys_mod_count>
+        <sys_name>openInSp</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sp_angular_provider_536c8888db3233004b08a455ca961953</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-07-17 09:31:18</sys_updated_on>
+        <type>directive</type>
+    </sp_angular_provider>
+</record_update>

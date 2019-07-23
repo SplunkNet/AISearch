@@ -12,7 +12,6 @@ ExecScript.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 		var id = this.getParameter('sysparm_id');
 		var q = this.getParameter('sysparm_query');
 		var res = new SearchUtils().searchScript(id,q);
-		//res = JSON.parse(res);
 		return JSON.stringify(res);
 	},
     type: 'ExecScript'
@@ -21,13 +20,13 @@ ExecScript.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-29 10:25:24</sys_created_on>
         <sys_id>b4a4ca28db6033004b08a455ca9619d9</sys_id>
-        <sys_mod_count>22</sys_mod_count>
+        <sys_mod_count>23</sys_mod_count>
         <sys_name>ExecScript</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_b4a4ca28db6033004b08a455ca9619d9</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-04-01 12:59:55</sys_updated_on>
+        <sys_updated_on>2019-07-18 09:38:01</sys_updated_on>
     </sys_script_include>
 </record_update>

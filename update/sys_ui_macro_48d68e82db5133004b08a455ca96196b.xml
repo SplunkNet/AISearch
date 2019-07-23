@@ -10,14 +10,14 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-05-10 09:03:02</sys_created_on>
         <sys_id>48d68e82db5133004b08a455ca96196b</sys_id>
-        <sys_mod_count>87</sys_mod_count>
+        <sys_mod_count>95</sys_mod_count>
         <sys_name>search_macro</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_ui_macro_48d68e82db5133004b08a455ca96196b</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-07-16 13:11:17</sys_updated_on>
+        <sys_updated_on>2019-07-23 13:07:27</sys_updated_on>
         <xml><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
@@ -32,7 +32,7 @@
 <g2:requires name="x_302527_ai_search.search_macro_client.jsdbx" includes="true" />
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
 		integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
-	<tr>
+
 		<div id="myApp" ng-app="myApp">
 			<div ng-controller="AISearch">
 				<div class='container'>
@@ -143,6 +143,12 @@
 										<a href="" ng-click="showMore($event,result,this)">show more</a>
 									</strong>
 								</div>
+								<hr></hr>
+        <div class="row spacer">
+          <div ng-repeat="action in ui_actions">
+          <a  class="col-md-2" ng-if="action.table_name==result.sys_class_name" ng-click="performAction(action.action_id,result.sys_id)">{{action.action_name}}</a>
+        	</div>
+        </div>
 							</div>
 							<div ng-if=" results.length==0" class="not_found">
 								<h1 class="title_not_found"> Hmm.</h1>
@@ -199,7 +205,7 @@
 
 			</div>
 		</div>
-	</tr>
+
 	<style>
 	.container{position:relative}.spacer{margin:5px}.not_found{padding:50px;color:#696868}.title_not_found{margin:0;font-size:6em;font-weight:100}.content_not_found{padding:10px;width:95%;font-size:1.5em;line-height:1.4}.filter_nav{margin-top:30px}.filter_nav_elem{margin:10px}.loading{opacity:.5}.search-form{border-radius:30px 0 0 30px!important;border:solid 1px #00bf8f}.search-btn{border-radius:0 30px 30px 0!important;background:#00bf8f}.fa-search{color:#fff}.overlay-div{width:100%;height:100%;z-index:1;position:fixed;top:0;opacity:1;display:flex;justify-content:center;align-items:center}.btn-circle{width:40px;height:40px;border:solid 1px gray;border-radius:35px;background:#fff;line-height:1.33}.btn-circle.selected{width:50px;height:50px;border:solid 2px #00bf8f}.indent{text-indent:30px}.badge{margin-right:5px}.badge.active{background-color:#00bf8f!important}
 	</style>

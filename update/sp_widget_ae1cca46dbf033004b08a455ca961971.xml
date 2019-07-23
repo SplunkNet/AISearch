@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope, spModal, $timeout) {
+        <client_script><![CDATA[function($scope, spModal, $timeout,$location) {
     /* widget controller */
     var c = this;
     if (c.options.search_field && c.options.widget_instance_id) {
@@ -208,6 +208,21 @@
             });
         });
     };
+	$scope.performAction = function(action_id,source_id){
+		c.data.target_id = $location.search().sys_id;
+		c.data.table_name = $location.search().table;
+		c.data.action_id = action_id;
+		c.data.source_id = source_id;
+		c.data.action = 'perform_ui_action';
+    c.data.q = $scope.q;
+    c.server.update().then(function (res) {
+			console.log(res);
+		});
+		/*
+		
+*/
+	}
+		
     /*
     *Helper functions
     */
@@ -222,7 +237,7 @@
             $scope.$watch(function () {
                 return document.querySelector(selector).value;
 
-            }, function (value) {
+            }, function (value,old) {
                 var timeout = null;
                 document.querySelector(selector).onkeyup = function (e) {
                     clearTimeout(timeout);
@@ -230,8 +245,10 @@
                     timeout = setTimeout(function () {
 
                         if (value.trim().length >= 5) {
-                            $scope.q = value;
-                            $scope.search();
+														if(old!=value){
+															$scope.q = value;
+															$scope.search();
+														}
                         }
                     }, 2000);
                 }
@@ -484,6 +501,7 @@ svg {
 	**We must have the source config objects or the list of sources.
 	**For testing we will have the default test config as reference .
 	*/
+	//determin which search config we go by if not set get the id of the default search config
 	var search_config_id=options.search_config.value;
 	if(!search_config_id){
 		var search_config = new GlideRecord('x_302527_ai_search_search_config');
@@ -493,10 +511,23 @@ svg {
 			search_config_id = search_config.sys_id	
 	}
 	data.table_filtered_by=[];
+	data.ui_actions = [];
+	//getting the filted by columns names and label of each search source
 	var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
 	search_sources.addQuery('search_config',search_config_id);
 	search_sources.query();
 	while(search_sources.next()){
+		//getting the actions related to each source
+		var actions = new GlideRecord('x_302527_ai_search_m2m_actions_sources');
+		actions.addQuery('source',search_sources.source);
+		actions.query();
+		while(actions.next()){
+			var action_obj = {'table_name' :actions.source.u_table_name+'','action_name':actions.action.name+'','action_id':actions.action+''};
+			gs.warn('from me'+JSON.stringify(action_obj));
+			data.ui_actions.push(action_obj);
+			
+		}
+		//getting the filtered by of table source
 		if(search_sources.source.sys_class_name=='x_302527_ai_search_table_source'){
 			var columns_names = [];
 			if(search_sources.source.filtered_by)  {  
@@ -511,6 +542,8 @@ svg {
 			}
 		}
 	}
+	//search
+	var g_res;
 	var searchUtils = new SearchUtils();
     if(input && input.action=='search'){
 			data.source_tables = [];
@@ -520,37 +553,69 @@ svg {
                 item.link1=item.sys_class_name+".do?sys_id="+item.sys_id;
         });
         data.res = res;
-			var g_res = searchUtils.searchGoogle(input.q);
+			 g_res = searchUtils.searchGoogle(input.q);
 			if(g_res.status=='success')
 				data.google_res = g_res.response;
         
     }
+	//google next and previous
 		if(input && input.action =='google'){
 			if(input.google=='next'){
-				var g_res = searchUtils.searchGoogle(input.q,input.start);
+				g_res = searchUtils.searchGoogle(input.q,input.start);
 				if(g_res.status=='success')
 					data.google_res = g_res.response;
 			}
 			if(input.google=='previous'){
-				var g_res = searchUtils.searchGoogle(input.q,input.start);
+				g_res = searchUtils.searchGoogle(input.q,input.start);
 				if(g_res.status=='success')
 					data.google_res = g_res.response;
 			}
 		}
+	
+	//UI actions process
+	if(input && input.action=="perform_ui_action"){
+		var source_id;
+		var target_id;
+		var table_name;
+		var action_id;
+		var q = input.q;
+		if(input.action_id)
+			action_id=input.action_id;
+		if(input.target_id)
+			target_id=input.target_id;
+		if(input.source_id)
+			source_id=input.source_id;
+		if(input.table_name)
+			table_name=input.table_name;
+		
+		var evaluator = new GlideScopedEvaluator(); 
+		evaluator.putVariable('source_id',source_id);
+		evaluator.putVariable('target_id',target_id);
+		evaluator.putVariable('table_name',table_name);
+		evaluator.putVariable('q',q);
+		evaluator.putVariable('response',null);
+        //get the script action record
+    gr = new GlideRecord('x_302527_ai_search_action'); 
+    gr.get(action_id);
+        //log the result script
+		evaluator.evaluateScript(gr, 'script', null);
+		var action_res = evaluator.getVariable('response');
+		data.action_response  = action_res;
+	}
   })();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-04-15 12:54:22</sys_created_on>
         <sys_id>ae1cca46dbf033004b08a455ca961971</sys_id>
-        <sys_mod_count>839</sys_mod_count>
+        <sys_mod_count>912</sys_mod_count>
         <sys_name>AI search clone</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sp_widget_ae1cca46dbf033004b08a455ca961971</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-07-16 12:59:15</sys_updated_on>
+        <sys_updated_on>2019-07-19 08:39:04</sys_updated_on>
         <template><![CDATA[<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
   integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
 <div class='container' ng-class="{true: 'loading', false: ''}[c.data.loading==true]">
@@ -644,10 +709,6 @@ svg {
         <div class="row">
           <div class="col-md-8">
             <h4 ng-bind-html="result.display_title">{{result.display_title}} </h4><br>
-            <h3>
-              {{result.ir_query_score}} | 
-              {{result.sys_created_on}}
-            </h3>
           </div>
           <a class='col-md-2' href="{{result.link1}}">open in backend</a>
           <a class='col-md-2' ng-click="pop(result)" href="">Preview </a>
@@ -661,6 +722,14 @@ svg {
           <p ng-bind-html="rs" name="parag">{{rs}}</p><strong><a href=""
               ng-click="showMore($event,result.display_description,this)">show more</a></strong>
         </div>
+        <hr>
+        <div class="row spacer">
+          <div ng-repeat="action in data.ui_actions">
+          <a  class="col-md-2"  ng-if="action.table_name==result.sys_class_name" ng-click="performAction(action.action_id,result.sys_id,result.sys_class_name)"><b>{{action.action_name}}</b></a>
+        	</div>
+        </div>
+        
+        
       </div>
       <div ng-if="c.data.results.length==0" class="not_found">
         <h1 class="title_not_found"> Hmm.</h1>

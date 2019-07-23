@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_302527_ai_search.ExecAction</api_name>
+        <client_callable>true</client_callable>
+        <description/>
+        <name>ExecAction</name>
+        <script><![CDATA[var ExecAction = Class.create();
+ExecAction.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+	helloWorld: function() 
+ { 
+	 gs.warn('bla bla bla !');
+	 return "The Server Says Hello " ; },
+	exec : function(){
+		gs.warn("inside the script inculde");
+		var action_id = this.getParameter('sysparm_id');
+		var q = this.getParameter('sysparm_q');
+		var source_id = this.getParameter('sysparm_source');
+		var target_id = this.getParameter('sysparm_target');
+		var table_name = this.getParameter('sysparm_table_name');
+		
+		var evaluator = new GlideScopedEvaluator(); 
+		evaluator.putVariable('source_id',source_id);
+		evaluator.putVariable('target_id',target_id);
+		evaluator.putVariable('table_name',table_name);
+		evaluator.putVariable('q',q);
+		evaluator.putVariable('response',null);
+        //get the script source record
+        gr = new GlideRecord('x_302527_ai_search_action'); 
+        gr.get(action_id);
+        //log the result script
+		evaluator.evaluateScript(gr, 'script', null);
+		var res = evaluator.getVariable('response');
+		return res;
+	},
+    type: 'ExecAction'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-07-18 10:06:17</sys_created_on>
+        <sys_id>c215a19cdb3233004b08a455ca961990</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>ExecAction</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_script_include_c215a19cdb3233004b08a455ca961990</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-07-19 08:16:48</sys_updated_on>
+    </sys_script_include>
+</record_update>
