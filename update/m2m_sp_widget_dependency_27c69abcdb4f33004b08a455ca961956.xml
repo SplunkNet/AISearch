@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_widget_dependency">
+    <m2m_sp_widget_dependency action="INSERT_OR_UPDATE">
+        <sp_dependency display_value="AI Search Dependencies ">a0b6dafcdb4f33004b08a455ca961938</sp_dependency>
+        <sp_widget display_value="AI search">5ce0bb14db7033004b08a455ca961993</sp_widget>
+        <sys_class_name>m2m_sp_widget_dependency</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-08-01 12:49:59</sys_created_on>
+        <sys_id>27c69abcdb4f33004b08a455ca961956</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>AI Search Dependencies .AI search</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>m2m_sp_widget_dependency_27c69abcdb4f33004b08a455ca961956</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-08-01 12:49:59</sys_updated_on>
+    </m2m_sp_widget_dependency>
+</record_update>

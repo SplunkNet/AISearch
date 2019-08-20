@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="Intelegence" max_length="40" name="x_302527_ai_search_intelegence" type="collection">
+        <element label="Ml solution" max_length="32" name="ml_solution" reference="ml_solution" reference_qual="solution_definition.trainer.name=similarity_trainer^" reference_qual_condition="solution_definition.trainer.name=similarity_trainer^" type="reference"/>
+        <element label="Table name" max_length="32" name="table_name" reference="sys_db_object" type="reference"/>
+        <index name="index">
+            <element name="ml_solution"/>
+        </index>
+        <index name="index2">
+            <element name="table_name"/>
+        </index>
+    </element>
+</database>

@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
     <sys_ui_page action="INSERT_OR_UPDATE">
         <category>general</category>
-        <client_script/>
+        <client_script><![CDATA[angular.module('testApp',[]).controller('ctrl',function($scope){
+	$scope.name="test name";
+});]]></client_script>
         <description/>
-        <direct>true</direct>
+        <direct>false</direct>
         <endpoint>x_302527_ai_search_test.do</endpoint>
-        <html><![CDATA[<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js" ></script>
-<div ng-app="testApp" >
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	
+<div ng-app="testApp" ng-controller="ctrl" >
 
 
    <p>Input something in the input box:</p>
@@ -19,20 +23,20 @@
 	</div>
 
 
-]]></html>
+</j:jelly>]]></html>
         <name>test</name>
         <processing_script/>
         <sys_class_name>sys_ui_page</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-29 15:41:38</sys_created_on>
         <sys_id>323f07a8db2433004b08a455ca961954</sys_id>
-        <sys_mod_count>11</sys_mod_count>
+        <sys_mod_count>15</sys_mod_count>
         <sys_name>test</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_ui_page_323f07a8db2433004b08a455ca961954</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-05-15 09:04:53</sys_updated_on>
+        <sys_updated_on>2019-07-29 08:35:14</sys_updated_on>
     </sys_ui_page>
 </record_update>
