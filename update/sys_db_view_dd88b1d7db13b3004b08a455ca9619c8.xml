@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_db_view">
+    <sys_db_view action="INSERT_OR_UPDATE">
+        <description/>
+        <label>test view</label>
+        <name>x_302527_ai_search_test_view</name>
+        <plural>test views</plural>
+        <sys_class_name>sys_db_view</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-08-21 15:18:24</sys_created_on>
+        <sys_id>dd88b1d7db13b3004b08a455ca9619c8</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_302527_ai_search_test_view</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_db_view_dd88b1d7db13b3004b08a455ca9619c8</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-08-21 15:18:24</sys_updated_on>
+    </sys_db_view>
+</record_update>

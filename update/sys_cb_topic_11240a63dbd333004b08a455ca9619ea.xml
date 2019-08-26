@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_cb_topic">
+    <sys_cb_topic action="INSERT_OR_UPDATE">
+        <applicability/>
+        <connect_queue/>
+        <description/>
+        <graph>{
+  "graph_api_version": "1.0.10",
+  "goals": {
+    "c8df8782ec8946048463fd63b1f73edb": {
+      "id": "c8df8782ec8946048463fd63b1f73edb",
+      "trigger": {
+        "type": "primary"
+      },
+      "name": "primary",
+      "applicability": "",
+      "description": "",
+      "nodes": {
+        "506667bd3e6643b1b0a4284f6a63cc28": {
+          "id": "506667bd3e6643b1b0a4284f6a63cc28",
+          "stepType": "Start",
+          "name": "Start",
+          "greetingResponse": {
+            "mode": "simple",
+            "value": ""
+          }
+        },
+        "e513f90ac08e4abfb4218ccdaca2a264": {
+          "id": "e513f90ac08e4abfb4218ccdaca2a264",
+          "stepType": "TerminateGoal",
+          "name": "End",
+          "confirmationMessage": {
+            "mode": "simple",
+            "value": ""
+          }
+        },
+        "a975c6dbe6424da2ab3b4a628f72b4a5": {
+          "id": "a975c6dbe6424da2ab3b4a628f72b4a5",
+          "stepType": "Prompt",
+          "name": "ask about the issue",
+          "prompt": {
+            "value": "What seems to be the issue ?",
+            "mode": "simple"
+          },
+          "confirmMessage": {
+            "value": "",
+            "mode": "simple"
+          },
+          "acknowledgeMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "optional": false,
+          "defaultValue": {
+            "value": "",
+            "mode": "simple"
+          },
+          "variableId": "d199182983e94577949ee3df3c0ead7a"
+        },
+        "246bd57866bf43a1808d2de5abf64acb": {
+          "id": "246bd57866bf43a1808d2de5abf64acb",
+          "name": "Search",
+          "script": "(function execute() {\n    var results = new Search().search(vaInputs.ask_about_the_issue+\"\");\n    if(results)\n        vaVars.results = results;\n    else\n        vaVars.results = [];\n\n})()\n",
+          "stepType": "ScriptAction",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "7bebd257fbc845a7a1c9add1aff41131": {
+          "id": "7bebd257fbc845a7a1c9add1aff41131",
+          "stepType": "TextOutput",
+          "name": "respond",
+          "value": {
+            "value": "(function execute() {\n    /* Return a quoted string.  For example:\n\n       var result;\n       if (vaInputs.first_name == 'Bill') {\n           return gs.getMessage('hi there {0}', [vaInputs.first_name]);\n       } else {\n           return gs.getMessage('how are you {0}', [vaInputs.last_name]);\n       }\n    */\n    return \"we found \"+vaVars.length;\n})()\n",
+            "mode": "script"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        }
+      },
+      "edges": [
+        {
+          "id": "66b5b9f62f2e4a1d82bb6f511b0b84e3",
+          "edgeType": "Edge",
+          "source": "a975c6dbe6424da2ab3b4a628f72b4a5",
+          "target": "246bd57866bf43a1808d2de5abf64acb",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "6f4236413ee345e2a07bc99dc1363c6d",
+          "edgeType": "Edge",
+          "source": "506667bd3e6643b1b0a4284f6a63cc28",
+          "target": "a975c6dbe6424da2ab3b4a628f72b4a5",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "d321a067e7cf4e7a8a3a5986124e5c43",
+          "edgeType": "Edge",
+          "source": "246bd57866bf43a1808d2de5abf64acb",
+          "target": "7bebd257fbc845a7a1c9add1aff41131",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "c5855d500a5340b89db386c58f02bb20",
+          "edgeType": "Edge",
+          "source": "7bebd257fbc845a7a1c9add1aff41131",
+          "target": "e513f90ac08e4abfb4218ccdaca2a264",
+          "sourcePort": "",
+          "targetPort": ""
+        }
+      ]
+    }
+  },
+  "variables": {
+    "d199182983e94577949ee3df3c0ead7a": {
+      "id": "d199182983e94577949ee3df3c0ead7a",
+      "name": "ask_about_the_issue",
+      "label": "Ask About The Issue",
+      "varType": "string",
+      "category": "vaInputs"
+    },
+    "current-user": {
+      "category": "vaInputs",
+      "id": "current-user",
+      "label": "User",
+      "name": "user",
+      "table": "sys_user",
+      "varType": "reference"
+    },
+    "7554be18dd4b4d85aed5d3452ffc1abe": {
+      "id": "7554be18dd4b4d85aed5d3452ffc1abe",
+      "value": {
+        "mode": "script",
+        "value": "(function execute() {\n    /* Return a quoted string.  For example:\n\n       var result;\n       if (vaInputs.first_name == 'Bill') {\n           return gs.getMessage('hi there {0}', [vaInputs.first_name]);\n       } else {\n           return gs.getMessage('how are you {0}', [vaInputs.last_name]);\n       }\n    */\n    return [];\n})()\n"
+      },
+      "name": "results",
+      "label": "results",
+      "varType": "script",
+      "category": "vaVars"
+    }
+  }
+}</graph>
+        <key_phrases>test</key_phrases>
+        <live_agent>false</live_agent>
+        <name>test</name>
+        <roles/>
+        <sys_class_name>sys_cb_topic</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-08-22 10:47:28</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_id>11240a63dbd333004b08a455ca9619ea</sys_id>
+        <sys_mod_count>5</sys_mod_count>
+        <sys_name>test</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_cb_topic_11240a63dbd333004b08a455ca9619ea</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-08-22 10:54:09</sys_updated_on>
+        <variables/>
+    </sys_cb_topic>
+    <sys_variable_value action="delete_multiple" query="document_key=11240a63dbd333004b08a455ca9619ea"/>
+</record_update>

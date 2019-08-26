@@ -8,165 +8,165 @@
         <name>SearchUtils</name>
         <script><![CDATA[var SearchUtils = Class.create();
 SearchUtils.prototype = {
-    initialize: function() {
+    initialize: function () {
     },
-    searchTable: function(table_name,columns,title_field,description_field,query,q){
+    searchTable: function (table_name, columns, title_field, description_field, query, q) {
         //columns will be a string of sys_ids divided by ','
-		query=query+"";
-		var glideutils = new GlideUtils();
-		var result = [];
-		var obj = {};
-		var columns_GR = [];
-		var source_limit = gs.getProperty('x_302527_ai_search.source_limit');
-        if(columns){
-            
-            columns=columns.split(',');
-            
-            columns.forEach(function(res) {
+        query = query + "";
+        var glideutils = new GlideUtils();
+        var result = [];
+        var obj = {};
+        var columns_GR = [];
+        var source_limit = gs.getProperty('x_302527_ai_search.source_limit');
+        if (columns) {
+
+            columns = columns.split(',');
+
+            columns.forEach(function (res) {
                 var columns_record = new GlideRecord('sys_dictionary');
                 columns_record.get(res);
                 var obj = {};
-                obj.name = columns_record.element+"";
-                if(columns_record.getDisplayValue('attributes').indexOf('ts_weight')!=-1){
+                obj.name = columns_record.element + "";
+                if (columns_record.getDisplayValue('attributes').indexOf('ts_weight') != -1) {
                     var attributes = columns_record.getDisplayValue('attributes').split(',');
-                    attributes.forEach(function(item){
-                        if(item.indexOf('ts_weight')!=-1){
+                    attributes.forEach(function (item) {
+                        if (item.indexOf('ts_weight') != -1) {
                             obj.weight = item.split('ts_weight=')[1];
                         }
                     });
-                    
-                }else{
-							obj.weight = 1;
-						}
-                
+
+                } else {
+                    obj.weight = 1;
+                }
+
                 columns_GR.push(obj);
             });
-    
+
             //split query text into words
             var query_text = q.split(' ');
-			
+
             //get result that contain the query with OR operator in between 
-			
+
             var query_string_or = '';
             var query_string_and = '';
-    
-			if(query.length>0){
-				query_string_or += query.substr(0,(query.length-2));
-				query_string_and += query.substr(0,(query.length-2));
-			}
-				
+
+            if (query.length > 0) {
+                query_string_or += query.substr(0, (query.length - 2));
+                query_string_and += query.substr(0, (query.length - 2));
+            }
+
             for (var i = 0; i < columns_GR.length; i++) {
                 //append AND operator between colummns
-                if( i != 0){
+                if (i != 0) {
                     query_string_or += '^OR';
-                    query_string_and +='^OR';
+                    query_string_and += '^OR';
                 }
-    
+
                 //build the and query
-                if(query_string_and.length==0)
-                    query_string_and = columns_GR[i].name+'LIKE'+q;
+                if (query_string_and.length == 0)
+                    query_string_and = columns_GR[i].name + 'LIKE' + q;
                 else
-                    query_string_and += columns_GR[i].name+'LIKE'+q;
-                
+                    query_string_and += columns_GR[i].name + 'LIKE' + q;
+
                 //build the or query ( or operator put in between every word )
                 for (var index = 0; index < query_text.length; index++) {
-                    if(query_string_or.length==0)
-                        query_string_or = columns_GR[i].name+'LIKE'+query_text[index];
-                    
-                    else  {
-                        if(index == 0)
-                            query_string_or += columns_GR[i].name+'LIKE'+query_text[index];
+                    if (query_string_or.length == 0)
+                        query_string_or = columns_GR[i].name + 'LIKE' + query_text[index];
+
+                    else {
+                        if (index == 0)
+                            query_string_or += columns_GR[i].name + 'LIKE' + query_text[index];
                         else
-                            query_string_or += '^OR'+columns_GR[i].name+'LIKE'+query_text[index];
-                    } 
-                        
-                    
+                            query_string_or += '^OR' + columns_GR[i].name + 'LIKE' + query_text[index];
+                    }
+
+
                 }
-                
+
             }
-           
+
             var rec_arr_and = [];
             var rec_arr_or = [];
             //query by AND 			
-			
+
             var result_and = new GlideRecordSecure(table_name);
             result_and.addEncodedQuery(query_string_and);
-			result_and.setLimit(source_limit);
+            result_and.setLimit(source_limit);
             result_and.query();
             //for now we return only the short_dscription and the resolution note
-            while(result_and.next()){
-                obj = glideutils.getFormatedObj(result_and,table_name,columns_GR,q);
-				obj.display_title = obj[title_field];
-				obj.display_description = obj[description_field];
+            while (result_and.next()) {
+                obj = glideutils.getFormatedObj(result_and, table_name, columns_GR, q);
+                obj.display_title = obj[title_field];
+                obj.display_description = obj[description_field];
                 obj.u_query_type = 'AND';
                 rec_arr_and.push(obj);
             }
-    
+
             //query by OR 
             var result_or = new GlideRecordSecure(table_name);
             result_or.addEncodedQuery(query_string_or);
-			result_or.setLimit(source_limit);
+            result_or.setLimit(source_limit);
             result_or.query();
-            
-            while(result_or.next()){
-                obj = glideutils.getFormatedObj(result_or,table_name,columns_GR,q);
-				obj.display_title = obj[title_field];
-				obj.display_description = obj[description_field];
+
+            while (result_or.next()) {
+                obj = glideutils.getFormatedObj(result_or, table_name, columns_GR, q);
+                obj.display_title = obj[title_field];
+                obj.display_description = obj[description_field];
                 obj.u_query_type = 'OR';
                 rec_arr_or.push(obj);
             }
-    
+
             result = rec_arr_and.concat(rec_arr_or.filter(function (item) {
                 return rec_arr_and.indexOf(item) < 0;
             }));
             return result;
-        }else{
-            var query_string = '123TEXTQUERY321='+q;
-            var rec  = new GlideRecord(table_name);
+        } else {
+            var query_string = '123TEXTQUERY321=' + q;
+            var rec = new GlideRecord(table_name);
             rec.addEncodedQuery(query_string);
             rec.query();
-            while(rec.next()){
-                obj = glideutils.getFormatedObj(rec,table_name,columns_GR,q);
-				obj.display_title = obj[title_field];
-				obj.display_description = obj[description_field];
+            while (rec.next()) {
+                obj = glideutils.getFormatedObj(rec, table_name, columns_GR, q);
+                obj.display_title = obj[title_field];
+                obj.display_description = obj[description_field];
                 result.push(obj);
             }
             return result;
         }
-        
+
 
     },
-	searchScript: function(script_id,q){
+    searchScript: function (script_id, q) {
         var source_limit = gs.getProperty('x_302527_ai_search.source_limit');
-		var evaluator = new GlideScopedEvaluator(); 
-		evaluator.putVariable('q',q);
-		evaluator.putVariable('response',null);
+        var evaluator = new GlideScopedEvaluator();
+        evaluator.putVariable('q', q);
+        evaluator.putVariable('response', null);
         //get the script source record
-        gr = new GlideRecord('x_302527_ai_search_script_source'); 
+        gr = new GlideRecord('x_302527_ai_search_script_source');
         gr.get(script_id);
         //log the result script
-		evaluator.evaluateScript(gr, 'script', null);
+        evaluator.evaluateScript(gr, 'script', null);
         var list = [];
-		list = evaluator.getVariable('response');
-		return list.slice(0,source_limit);
-        
+        list = evaluator.getVariable('response');
+        return list.slice(0, source_limit);
+
     },
-	searchStatic : function (q) {
-		query_string = '';
-		q = q.split(' ');
-		for(var i = 0;i<q.length;i++){
-			if(i == 0)
-				query_string = 'u_related_wordsLIKE'+q[i];
-			else
-				query_string += query_string+'^ORu_related_wordsLIKE'+q[i];
-		}
+    searchStatic: function (q) {
+        query_string = '';
+        q = q.split(' ');
+        for (var i = 0; i < q.length; i++) {
+            if (i == 0)
+                query_string = 'u_related_wordsLIKE' + q[i];
+            else
+                query_string += query_string + '^ORu_related_wordsLIKE' + q[i];
+        }
         var result = [];
-		var glideutils = new GlideUtils();
+        var glideutils = new GlideUtils();
         var rec = new GlideRecord('x_302527_ai_search_static_source');
         rec.addEncodedQuery(query_string);
         rec.query();
-        while(rec.next()){
-			result.push(glideutils.getFormatedObj(rec,'x_302527_ai_search_static_source',q));
+        while (rec.next()) {
+            result.push(glideutils.getFormatedObj(rec, 'x_302527_ai_search_static_source', q));
         }
         //loop over the urls and return the results
 
@@ -184,131 +184,150 @@ SearchUtils.prototype = {
         //     responses.push(res);
         // });
         // return responses;
-		return result;
+        return result;
     },
-    searchGoogle : function(q,start){
+    searchGoogle: function (q, start) {
         var result = {};
         var key = gs.getProperty('x_302527_ai_search.google_key');
         var cx = gs.getProperty('x_302527_ai_search.google_engine_context');
-        if(cx && key){
+        if (cx && key) {
             var request = new sn_ws.RESTMessageV2();
             request.setEndpoint('https://www.googleapis.com/customsearch/v1');
             request.setHttpMethod('GET');
-            request.setQueryParameter('key',key);
-            request.setQueryParameter('cx',cx);
-            request.setQueryParameter('q',q);
-			request.setQueryParameter('num',5);
-            request.setRequestHeader("Accept","application/json");
-			if(start){
-				request.setQueryParameter('start',start);
-			}
+            request.setQueryParameter('key', key);
+            request.setQueryParameter('cx', cx);
+            request.setQueryParameter('q', q);
+            request.setQueryParameter('num', 5);
+            request.setRequestHeader("Accept", "application/json");
+            if (start) {
+                request.setQueryParameter('start', start);
+            }
             var response = request.execute();
             response = JSON.parse(response.getBody());
-            if(response.hasOwnProperty('error')){
+            if (response.hasOwnProperty('error')) {
                 result.status = 'fail';
-                if(response.error.message=='Bad Request')
+                if (response.error.message == 'Bad Request')
                     result.message = 'Key is not set or invalid';
-                if(response.error.message=='Invalid Value')
+                if (response.error.message == 'Invalid Value')
                     result.message = 'context is not set or invalid';
-            }else{
+            } else {
                 result.status = 'success';
-                result.response = response ;
+                result.response = response;
             }
-            
-        }else{
+
+        } else {
             result.status = 'fail';
             result.message = 'Key or context is not defined. make sure you set them in google search setup module .';
         }
-        return result ; 
+        return result;
     },
-	searchRelevance : function(q,search_config){
-		var title_desc_by_table = [];
-		var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
-		search_sources.addQuery('search_config',search_config);
-		search_sources.query();
-		while(search_sources.next()){
-			if(search_sources.source.sys_class_name == 'x_302527_ai_search_table_source'){
-				var title_desc = {
-					'table_name':search_sources.source.u_table_name,
-					'title_field':search_sources.source.title_field,
-					'description_field':search_sources.source.description_field
-				};
-				title_desc_by_table.push(title_desc);
-			}
-			
-		}
-		
-		var glideutils = new GlideUtils();
-		var result = [];
-		var gr = new GlideRecord('x_302527_ai_search_relevance_report');
-		gr.addQuery('query',q);
-		gr.query();
-		while(gr.next()){
-			if(gr.solution_table_name && gr.solution){
-				var res = new GlideRecord(gr.solution_table_name);
-				res.get(gr.solution);
-				var obj = glideutils.getFormatedObj(res,gr.solution_table_name,[],q);
-				title_desc_by_table.forEach(function(item){
-					if(item.table_name == gr.solution_table_name){
-						obj.display_title = obj[item.title_field];
-						obj.display_description = obj[item.description_field];
-						result.push(obj);
+    searchRelevance: function (q, search_config) {
+        var title_desc_by_table = [];
+        var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
+        search_sources.addQuery('search_config', search_config);
+        search_sources.query();
+        while (search_sources.next()) {
+            if (search_sources.source.sys_class_name == 'x_302527_ai_search_table_source') {
+                var title_desc = {
+                    'table_name': search_sources.source.u_table_name,
+                    'title_field': search_sources.source.title_field,
+                    'description_field': search_sources.source.description_field
+                };
+                title_desc_by_table.push(title_desc);
+            }
+
+        }
+
+        var glideutils = new GlideUtils();
+        var result = [];
+        var gr = new GlideRecord('x_302527_ai_search_relevance_report');
+        gr.addQuery('query', q);
+        gr.query();
+        while (gr.next()) {
+            if (gr.solution_table_name && gr.solution) {
+                var res = new GlideRecord(gr.solution_table_name);
+                res.get(gr.solution);
+                var obj = glideutils.getFormatedObj(res, gr.solution_table_name, [], q);
+                title_desc_by_table.forEach(function (item) {
+                    if (item.table_name == gr.solution_table_name) {
+                        obj.display_title = obj[item.title_field];
+                        obj.display_description = obj[item.description_field];
+                        result.push(obj);
+                    }
+                });
+
+            }
+
+        }
+        return result;
+    },
+    searchIntelligence: function (rec, ml_sol, search_config) {
+		var res={};
+        var title_desc_by_table = {};
+        var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
+        search_sources.addQuery('search_config', search_config);
+        search_sources.query();
+        while (search_sources.next()) {
+            if (search_sources.source.sys_class_name == 'x_302527_ai_search_table_source' && search_sources.source.u_table_name == rec.sys_class_name) {
+                title_desc_by_table = {
+                    'title_field': search_sources.source.title_field,
+                    'description_field': search_sources.source.description_field
+                };
+            }
+
+        }
+        var predictor = new global.MLPredictor();
+        var solution = predictor.findActiveSolution(ml_sol);
+        if (solution) {
+            var options = {
+                top_n: 10,//top 10 records sorted by the confidence
+                apply_threshold: false
+            };
+            var result = predictor.getPredictions(rec, solution, options);
+            if (result) {
+				var results=[];
+                var glideutils = new GlideUtils();
+                //loop on all result
+                result.forEach(function (element) {
+                    element = JSON.parse(element.toJSONString());
+					if(rec.sys_id!=element.outcome){
+						var gr = new GlideRecord(rec.sys_class_name);
+						gr.get(element.outcome);
+						var obj = glideutils.getFormatedObj(gr, gr.sys_class_name, [], "");
+						obj.display_title = obj[title_desc_by_table.title_field];
+						obj.display_description = obj[title_desc_by_table.description_field];
+						obj.tag_name = "intelligence";
+						results.push(obj);
 					}
-				});
-				
+                    
+                });
+				res.status = "success";
+				res.results = results;
+            }else{
+				res.status = "failed";
+				res.results=[];
+				res.error_msg="No silimar results found with this record.";
 			}
-			
+        }else{
+			res.status = "failed";
+			res.results=[];
+			res.error_msg="No solution found with the name "+ml_sol;
 		}
-		return result;
-	},
-	searchIntelligence : function(rec,ml_sol,search_config){
-		var title_desc_by_table = {};
-		var search_sources = new GlideRecord('x_302527_ai_search_m2m_search_configs_sources');
-		search_sources.addQuery('search_config',search_config);
-		search_sources.query();
-		while(search_sources.next()){
-			if(search_sources.source.sys_class_name == 'x_302527_ai_search_table_source' && search_sources.source.u_table_name ==rec.sys_class_name){
-				 title_desc_by_table = {
-					'title_field':search_sources.source.title_field,
-					'description_field':search_sources.source.description_field
-				};
-			}
-			
-		}
-		var predictor = new global.MLPredictor();
-		var solution = predictor.findActiveSolution(ml_sol);
-		var options  = {
-			top_n:10,//top 10 records sorted by the confidence
-			apply_threshold:true
-		};
-		var res = [];
-		var result = predictor.getPredictions(rec,solution,options);
-		
-		var glideutils = new GlideUtils();
-		//loop on all result
-		result.forEach(function(element){
-			var gr = new GlideRecord(rec.sys_class_name);
-			gr.get(element.outcome);
-			var obj = glideutils.getFormatedObj(element,gr.sys_class_name,[],"");
-			obj.display_title = obj[title_desc_by_table.title_field];
-			obj.display_description = obj[title_desc_by_table.description_field];
-			obj.tag_name = "intelligence";
-			res.push(obj);
-		});
-	},
+		return res;
+    },
     type: 'SearchUtils'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-15 08:37:48</sys_created_on>
         <sys_id>dbf7698cdb1033004b08a455ca96194a</sys_id>
-        <sys_mod_count>132</sys_mod_count>
+        <sys_mod_count>139</sys_mod_count>
         <sys_name>SearchUtils</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_dbf7698cdb1033004b08a455ca96194a</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-08-16 08:48:01</sys_updated_on>
+        <sys_updated_on>2019-08-21 10:30:59</sys_updated_on>
     </sys_script_include>
 </record_update>

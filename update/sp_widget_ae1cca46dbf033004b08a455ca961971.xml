@@ -10,7 +10,7 @@
     } else {
         c.data.is_custom_field = false;
     }
-
+		
     var item_per_page = 5;
     c.data.table_filtered_by = [];
     c.data.loading = false;
@@ -61,6 +61,7 @@
                 }
             });
             $scope.initDyFilters(c.data.all_results, c.data.table_filtered_by);
+					c.data.all_results = c.data.all_results.concat(c.data.intelligence_results);
         });
 
     };
@@ -123,11 +124,17 @@
                 filtered = [];
                 c.data.all_results.forEach(function (item) {
 									if(source_name=="helpfull"){
-										if ($scope.str_contains(item[column + ''], value))
-                        filtered.push(item);
+										if(item && item[column+''])
+											if ($scope.str_contains(item[column + ''], value))
+												filtered.push(item);
+									}else if(source_name=="intelligence"){
+										if(item && item[column+''])
+											if ($scope.str_contains(item[column + ''], value))
+													filtered.push(item);
 									}else{
-										if (item.sys_class_name == source_name && $scope.str_contains(item[column + ''], value))
-                        filtered.push(item);
+										if(item && item.sys_class_name)
+											if (item.sys_class_name == source_name && $scope.str_contains(item[column + ''], value))
+													filtered.push(item);
 									}
                     
                 });
@@ -136,6 +143,7 @@
             } else {
                 filtered = [];
                 c.data.all_results.forEach(function (item) {
+									if(item && item.sys_class_name)
                     if (item.sys_class_name == source_name)
                         filtered.push(item);
                 });
@@ -220,7 +228,7 @@
             });
         });
     };
-	$scope.performAction = function(action_id,source_id,table_name,link){
+		$scope.performAction = function(action_id,source_id,table_name,link){
 		c.data.target_id = $location.search().sys_id;
 		c.data.table_name = table_name;
 		c.data.action_id = action_id;
@@ -234,7 +242,6 @@
 				text: "Your feedback will provide assistance to the next person who have a similar problem,\nThank you !",
 				icon: "success",
 				timer: 3000,
-				showCancelButton: false,
 				showConfirmButton: false
 			});
 		});
@@ -242,6 +249,17 @@
 		
 */
 	}
+		$scope.filterIntelligence = function(){
+			console.log("clicked");
+			$scope.calculatePages();
+				//$scope.calculatePages(c.data.intelligence_results);
+			
+		}
+	//display Intelligence results
+		if(c.data.intelligence_results){
+			c.data.all_results = c.data.intelligence_results;
+			$scope.calculatePages(c.data.intelligence_results);
+		}
 		
     /*
     *Helper functions
@@ -576,21 +594,36 @@ svg {
 		}
 	}
 	//getting intelligence results
-		var searchUtils = new SearchUtils();
+	var searchUtils = new SearchUtils();
 	data.table = $sp.getParameter('table');
 	data.sys_id = $sp.getParameter('sys_id');
 	if(data.table && data.sys_id){
-		var intelegence = new GlideRecord('x_302527_ai_search_intelegence');
-		intelegence.addQuery('table_name',data.table);
-		intelegence.setLimit(1);
-		intelegence.query();
-		if(intelegence.next()){
-			//we have a similarity solution
-			var rec = new GlideRecord(data.table);
-			rec.get(data.sys_id);
-			var res = searchUtils.searchIntelligence(rec,intelegence.ml_solution.solution_name,search_config_id);
-			gs.warn(res.length);
+		var table_record = new GlideRecord('sys_db_object');
+		table_record.addQuery('label',data.table);
+		table_record.setLimit(1);
+		table_record.query();
+		if(table_record.next()){
+			var intelegence = new GlideRecord('x_302527_ai_search_intelegence');
+			intelegence.addQuery('table_name',table_record.sys_id);
+			intelegence.setLimit(1);
+			intelegence.query();
+			if(intelegence.next()){
+				//we have a similarity solution
+				var rec = new GlideRecord(data.table);
+				rec.get(data.sys_id);
+				var res = searchUtils.searchIntelligence(rec,intelegence.ml_solution.solution_name,search_config_id);
+				if(res && res.status=="success"){
+					data.intelligence_results = res.results;
+				}else{
+					if(!res){
+						gs.warn("Unknown error script return null value.");
+					}else{
+						gs.warn(res.status+" "+res.error_msg);
+					}
+				}
+			}
 		}
+		
 	}
 	//search
 	var g_res;
@@ -599,6 +632,7 @@ svg {
 			var gr = new GlideRecord('x_302527_ai_search_relevance_report');
 			gr.initialize(); 
 			gr.query = input.q;
+			gr.search_context = "Portal";
 			data.relevance_id = gr.insert();
 			data.source_tables = [];
         var res = new Search().search(input.q);
@@ -668,14 +702,14 @@ svg {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-04-15 12:54:22</sys_created_on>
         <sys_id>ae1cca46dbf033004b08a455ca961971</sys_id>
-        <sys_mod_count>1012</sys_mod_count>
+        <sys_mod_count>1057</sys_mod_count>
         <sys_name>AI search clone</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sp_widget_ae1cca46dbf033004b08a455ca961971</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-08-19 10:04:31</sys_updated_on>
+        <sys_updated_on>2019-08-26 09:25:25</sys_updated_on>
         <template><![CDATA[<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
   integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
 <div class='container' ng-class="{true: 'loading', false: ''}[c.data.loading==true]">
@@ -709,6 +743,15 @@ svg {
             <h4 class="panel-title" ng-click="filterItems('helpfull','tag_name','helpfull_result')">
               <a>
                 Helpfull Result <span class="pull-right badge">{{c.data.helpfull_result}}</span>
+              </a>
+            </h4>
+          </div>
+        </div>
+        <div ng-if="c.data.intelligence_results.length >0" class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title" ng-click="filterItems('intelligence','tag_name','intelligence')">
+              <a>
+                Intelligence<span class="pull-right badge">{{c.data.intelligence_results.length}}</span>
               </a>
             </h4>
           </div>
@@ -764,7 +807,7 @@ svg {
     </div>
     <!-- regular results goes here  -->
     <div ng-if=" !c.data.show_google || c.data.show_google==false" class="col-md-10 list-group filter_nav">
-      <div ng-if="c.data.all_results.length >0" class="panel panel-default">
+      <div ng-if="c.data.all_results.length >0 && c.data.all_results!=c.data.intelligence_results" class="panel panel-default">
           <div class="panel-heading" role="tab" id="headingOne">
             <h4 class="panel-title">
               Sort By : 

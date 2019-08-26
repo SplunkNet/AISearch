@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_cb_topic">
+    <sys_cb_topic action="INSERT_OR_UPDATE">
+        <applicability/>
+        <connect_queue/>
+        <description/>
+        <graph>{
+  "graph_api_version": "1.0.10",
+  "goals": {
+    "98475dd4ba8145d9a2a46a023a29d09f": {
+      "id": "98475dd4ba8145d9a2a46a023a29d09f",
+      "trigger": {
+        "type": "primary"
+      },
+      "name": "primary",
+      "applicability": "",
+      "description": "",
+      "nodes": {
+        "7f20a53fb5954cc4bc68f990bf047ee0": {
+          "id": "7f20a53fb5954cc4bc68f990bf047ee0",
+          "stepType": "Start",
+          "name": "Start",
+          "greetingResponse": {
+            "mode": "simple",
+            "value": ""
+          }
+        },
+        "9f89373d96a44b59955e41ce6072beb0": {
+          "id": "9f89373d96a44b59955e41ce6072beb0",
+          "stepType": "TerminateGoal",
+          "name": "End",
+          "confirmationMessage": {
+            "value": "Happy to help, see you !",
+            "mode": "simple"
+          }
+        },
+        "1f631c26f494475398a584464f54b216": {
+          "id": "1f631c26f494475398a584464f54b216",
+          "stepType": "Prompt",
+          "name": "describe the issue",
+          "prompt": {
+            "value": "What seems to be the issue",
+            "mode": "simple"
+          },
+          "confirmMessage": {
+            "value": "",
+            "mode": "simple"
+          },
+          "acknowledgeMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "optional": false,
+          "defaultValue": {
+            "value": "",
+            "mode": "simple"
+          },
+          "variableId": "0bd59162ac8b426aba9d201dc45e11ee"
+        },
+        "792ea359a2374fa0ac703985b597134e": {
+          "id": "792ea359a2374fa0ac703985b597134e",
+          "stepType": "TextOutput",
+          "name": "confirmation message",
+          "value": {
+            "value": "okay... let's try to find something helpful  !",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "4721ddba3508489bb6af9b3c3b928e5e": {
+          "id": "4721ddba3508489bb6af9b3c3b928e5e",
+          "name": "Search in the default configuration",
+          "script": "(function execute() {\n    var results = new Search().search(vaInputs.describe_the_issue + \"\");\n    vaVars.result = JSON.stringify(results);\n    var gr = new GlideRecord('x_302527_ai_search_relevance_report');\n    gr.initialize();\n    gr.query = vaInputs.describe_the_issue.toString();\n    gr.search_context = \"Virtual Agent\";\n    var id = gr.insert();\n    vaVars.relevance_id = id;\n})()\n",
+          "stepType": "ScriptAction",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "8225e3f8e4794b419c5649e473976685": {
+          "stepType": "ReferenceChoicePrompt",
+          "name": "Result_groups",
+          "prompt": {
+            "value": "we have the following : ",
+            "mode": "simple"
+          },
+          "confirmMessage": {
+            "value": "",
+            "mode": "simple"
+          },
+          "acknowledgeMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "optional": false,
+          "defaultValue": {
+            "value": "",
+            "mode": "simple"
+          },
+          "variableId": "9d37f2cb900a4b489d83c2274ea43afc",
+          "id": "8225e3f8e4794b419c5649e473976685",
+          "mode": "external",
+          "script": "(function execute() {\n \n    var options = [];    \n    var results = JSON.parse(vaVars.result);\n    \n    var res_by_tag = new GlideUtils().groupBy(results,'tag_name');\n    if(res_by_tag.hasOwnProperty('helpfull_result')){\n        var obj = 'tag_name,helpfull_result';\n        options.push({'value':obj,'label':res_by_tag.helpfull_result.length+' helpfull results'});\n    }\n        \n    var groups = new GlideUtils().groupBy(results,'sys_class_name');\n    for(key in groups){\n        var obj = 'sys_class_name,'+key;\n        var rec = new GlideRecord('sys_db_object');\n        rec.addQuery('name',key);\n        rec.setLimit(1);\n        rec.query();\n        if(rec.next())\n        options.push({ 'value': obj, 'label': groups[key].length+' from '+rec.label });\n    }\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    \n    return options;\n  \n})()\n",
+          "noRecordsResponseMsg": {
+            "value": "Problem occurred",
+            "mode": "simple"
+          },
+          "condition": {
+            "value": "(function execute() {\n \n    var options = [];    \n    var results = JSON.parse(vaVars.result);\n    \n    var res_by_tag = new GlideUtils().groupBy(results,'tag_name');\n    if(res_by_tag.hasOwnProperty('helpfull_result')){\n        var obj = 'tag_name,helpfull_result';\n        options.push({'value':obj,'label':res_by_tag.helpfull_result.length+' helpfull results'});\n    }\n        \n    var groups = new GlideUtils().groupBy(results,'sys_class_name');\n    for(key in groups){\n        var obj = 'sys_class_name,'+key;\n        var rec = new GlideRecord('sys_db_object');\n        rec.addQuery('name',key);\n        rec.setLimit(1);\n        rec.query();\n        if(rec.next())\n        options.push({ 'value': obj, 'label': groups[key].length+' from '+rec.label });\n    }\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    \n    return options;\n  \n})()\n",
+            "mode": "external_script"
+          }
+        },
+        "ec210e40737c41a1bc5da44818be3d44": {
+          "id": "ec210e40737c41a1bc5da44818be3d44",
+          "stepType": "Decision",
+          "name": "Decision"
+        },
+        "9ff5016b4dba41148035b666c146168a": {
+          "stepType": "ReferenceChoicePrompt",
+          "name": "List helpfull results",
+          "prompt": {
+            "value": "Here's what we found : ",
+            "mode": "simple"
+          },
+          "confirmMessage": {
+            "value": "",
+            "mode": "simple"
+          },
+          "acknowledgeMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "optional": false,
+          "defaultValue": {
+            "value": "",
+            "mode": "simple"
+          },
+          "variableId": "b1e80cb4da2b4a57b2cb768937bcc158",
+          "id": "9ff5016b4dba41148035b666c146168a",
+          "mode": "external",
+          "script": "(function execute() {\n    var options = []; \n    var all_results = JSON.parse(vaVars.result);\n    var group_by = vaInputs.result_groups.toString().split(',')[0];\n    var group_by_value = vaInputs.result_groups.toString().split(',')[1];\n    var results = new GlideUtils().groupBy(all_results,group_by);\n    results = results[group_by_value];\n\n    var stop = 0;\n    var limit = parseInt(vaVars.limit);\n    var index =  parseInt(vaVars.index);\n    if(results.length&lt;limit)\n        stop = results.length;\n    else\n        stop = index+limit;\n\n    for(var i=index;i&lt;stop;i++){\n        var item = results[i];\n        if(item &amp;&amp; item.display_title){\n            var display_value = item.display_title.split('&lt;b&gt;').join('');\n            display_value = display_value.split('&lt;/b&gt;').join('');\n            var value = item.sys_id+','+item.sys_class_name;\n            options.push({ 'value': value, 'label': display_value });\n        }\n\n    } \n\n    if (index &gt;= limit) {\n        options.push({ 'value': 'show_prev', 'label': gs.getMessage('Show previous')});    \n    }\n\n    if (index+limit &lt; results.length) {\n        options.push({ 'value': 'show_next', 'label': gs.getMessage('Show more')});    \n    }\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options;\n\n})()\n",
+          "noRecordsResponseMsg": {
+            "value": "problem occurred",
+            "mode": "simple"
+          },
+          "condition": {
+            "value": "(function execute() {\n    var options = []; \n    var all_results = JSON.parse(vaVars.result);\n    var group_by = vaInputs.result_groups.toString().split(',')[0];\n    var group_by_value = vaInputs.result_groups.toString().split(',')[1];\n    var results = new GlideUtils().groupBy(all_results,group_by);\n    results = results[group_by_value];\n\n    var stop = 0;\n    var limit = parseInt(vaVars.limit);\n    var index =  parseInt(vaVars.index);\n    if(results.length&lt;limit)\n        stop = results.length;\n    else\n        stop = index+limit;\n\n    for(var i=index;i&lt;stop;i++){\n        var item = results[i];\n        if(item &amp;&amp; item.display_title){\n            var display_value = item.display_title.split('&lt;b&gt;').join('');\n            display_value = display_value.split('&lt;/b&gt;').join('');\n            var value = item.sys_id+','+item.sys_class_name;\n            options.push({ 'value': value, 'label': display_value });\n        }\n\n    } \n\n    if (index &gt;= limit) {\n        options.push({ 'value': 'show_prev', 'label': gs.getMessage('Show previous')});    \n    }\n\n    if (index+limit &lt; results.length) {\n        options.push({ 'value': 'show_next', 'label': gs.getMessage('Show more')});    \n    }\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options;\n\n})()\n",
+            "mode": "external_script"
+          }
+        },
+        "62aedececfa746c6898ea537324d8541": {
+          "id": "62aedececfa746c6898ea537324d8541",
+          "stepType": "HtmlOutput",
+          "name": "Display helpful result",
+          "value": "&lt;html&gt;\n&lt;link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css\"&gt;\n&amp;lt;script&amp;gt;&amp;lt;/script&amp;gt;\n\n&lt;body&gt;\n\n    &lt;div class=\"row\"&gt;\n        &lt;div class=\"col s12 m6\"&gt;\n            &lt;div class=\"card\"&gt;\n                &lt;div class=\"card-content\"&gt;\n                    &lt;span class=\"card-title\"&gt;{{vaVars.title}}&lt;/span&gt;\n                    &lt;p&gt;{{vaVars.description}}&lt;/p&gt;\n                &lt;/div&gt;\n                &lt;div class=\"card-action\"&gt;\n                    &lt;a href=\"{{vaVars.link}}\"&gt;Open&lt;/a&gt;\n                &lt;/div&gt;\n            &lt;/div&gt;\n        &lt;/div&gt;\n    &lt;/div&gt;\n&lt;/body&gt;\n\n&lt;/html&gt;",
+          "height": "0",
+          "width": "0",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "550ce06ed8cc40e99efc76715aeed38f": {
+          "id": "550ce06ed8cc40e99efc76715aeed38f",
+          "name": "Format selected result",
+          "script": "(function execute() {\n    var helpful = JSON.parse(vaVars.result);\n    var selected_value = vaInputs.list_helpfull_results.toString().split(',');\n    helpful.forEach(function(item){\n        if(item.sys_id == selected_value[0]){\n            vaVars.title = item.display_title;\n            vaVars.description = item.display_description;\n            vaVars.link = 'sp?id=form&amp;table='+selected_value[1]+'&amp;sys_id='+selected_value[0];\n        }\n    }) \n})()\n",
+          "stepType": "ScriptAction",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "97e49876b05d4bfba6752618ace6924a": {
+          "stepType": "ReferenceChoicePrompt",
+          "name": "Additional actions",
+          "prompt": {
+            "value": "What are you going to do",
+            "mode": "simple"
+          },
+          "confirmMessage": {
+            "value": "",
+            "mode": "simple"
+          },
+          "acknowledgeMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "optional": false,
+          "defaultValue": {
+            "value": "",
+            "mode": "simple"
+          },
+          "variableId": "346b41d0048942e0806ff496118ab434",
+          "id": "97e49876b05d4bfba6752618ace6924a",
+          "mode": "external",
+          "script": "(function execute() {\n   var options = [];\n    \n    options.push({ 'value': 'mark_helpful', 'label': gs.getMessage('mark this result as helpful')});\n    options.push({ 'value': 'return_to_list', 'label': gs.getMessage('Return to the results list')});\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options; \n})()\n",
+          "noRecordsResponseMsg": {
+            "value": "Problem occurred",
+            "mode": "simple"
+          },
+          "condition": {
+            "value": "(function execute() {\n   var options = [];\n    \n    options.push({ 'value': 'mark_helpful', 'label': gs.getMessage('mark this result as helpful')});\n    options.push({ 'value': 'return_to_list', 'label': gs.getMessage('Return to the results list')});\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options; \n})()\n",
+            "mode": "external_script"
+          }
+        },
+        "00d0a15c5c334fddaaeab8e28d664331": {
+          "id": "00d0a15c5c334fddaaeab8e28d664331",
+          "stepType": "Decision",
+          "name": "Decision"
+        },
+        "1f275279e6724b2ca9544d0bd7eccc24": {
+          "id": "1f275279e6724b2ca9544d0bd7eccc24",
+          "name": "Decrement index",
+          "script": "(function execute() {\n    var limit = parseInt(vaVars.limit);\n    var index = parseInt(vaVars.index);\n    index = index-limit;\n    if (index &lt; 0) \n        index = 0;\n    vaVars.index = index;\n})()\n",
+          "stepType": "ScriptAction",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "db7e982628ae471a8b214948d1d5ef8d": {
+          "id": "db7e982628ae471a8b214948d1d5ef8d",
+          "name": "Increment index",
+          "script": "(function execute() {\n    var limit = parseInt(vaVars.limit);\n    var index = parseInt(vaVars.index);\n    index = index+limit;\n    vaVars.index = index;\n})()\n",
+          "stepType": "ScriptAction",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "6f85fa237319419688361502cd592e86": {
+          "id": "6f85fa237319419688361502cd592e86",
+          "stepType": "Decision",
+          "name": "Decision"
+        },
+        "4c4e8850d5ad43e9bed4ca7863d7fea5": {
+          "id": "4c4e8850d5ad43e9bed4ca7863d7fea5",
+          "name": "Mark it helpful",
+          "script": "(function execute() {\n        var selected_value = vaInputs.list_helpfull_results.toString().split(',');\n        var table_name = selected_value[1];\n        var source_id = selected_value[0];\n        var gr = new GlideRecord('x_302527_ai_search_relevance_report');\n        gr.get(vaVars.relevance_id.toString()); \n        gr.solution_table_name = table_name;\n        gr.solution = source_id;\n        gr.update();\n})()\n",
+          "stepType": "ScriptAction",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "5f2e957704c34c9fab4a39bd78ab99c3": {
+          "id": "5f2e957704c34c9fab4a39bd78ab99c3",
+          "stepType": "TextOutput",
+          "name": "Happy to help",
+          "value": {
+            "value": "(function execute() {\n    return 'Your feedback will provide assistance to the next person who have a similar problem,\\nThank you !';\n})()\n",
+            "mode": "script"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        }
+      },
+      "edges": [
+        {
+          "id": "022b8de9abc449c8bdfd31b682a200b0",
+          "edgeType": "Branch",
+          "source": "ec210e40737c41a1bc5da44818be3d44",
+          "target": "9f89373d96a44b59955e41ce6072beb0",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n        if(vaInputs.result_groups.toString()=='cancel')\n                return true;\n        return false;\n})()\n"
+          },
+          "label": "Cancel"
+        },
+        {
+          "id": "7e65f21fcd7c43d7b9d66200cd1867f7",
+          "edgeType": "Branch",
+          "source": "ec210e40737c41a1bc5da44818be3d44",
+          "target": "9ff5016b4dba41148035b666c146168a",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.result_groups.toString()!='new_search' &amp;&amp; vaInputs.result_groups.toString()!='cancel')\n        return true;\n    return false;\n\n})()\n"
+          },
+          "label": "select group"
+        },
+        {
+          "id": "fe4be6c692ca44ba9ac6746ea3ab6ad7",
+          "edgeType": "Edge",
+          "source": "4721ddba3508489bb6af9b3c3b928e5e",
+          "target": "8225e3f8e4794b419c5649e473976685",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "e21e2724f1654cdb9070be6048645856",
+          "edgeType": "Edge",
+          "source": "7f20a53fb5954cc4bc68f990bf047ee0",
+          "target": "1f631c26f494475398a584464f54b216",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "5e4b2c608cab4efa9cc35015c9a1145d",
+          "edgeType": "Edge",
+          "source": "1f631c26f494475398a584464f54b216",
+          "target": "792ea359a2374fa0ac703985b597134e",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "700d7c17ef2b40aab4d1c610dabb4359",
+          "edgeType": "Edge",
+          "source": "792ea359a2374fa0ac703985b597134e",
+          "target": "4721ddba3508489bb6af9b3c3b928e5e",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "b45a7aabb476488992f1765ac1e82fe2",
+          "edgeType": "Edge",
+          "source": "8225e3f8e4794b419c5649e473976685",
+          "target": "ec210e40737c41a1bc5da44818be3d44",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "fa6a417a5f7f4003b550aaa6a5e4fa21",
+          "edgeType": "Edge",
+          "source": "550ce06ed8cc40e99efc76715aeed38f",
+          "target": "62aedececfa746c6898ea537324d8541",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "758b47dd263441cbae50898fd88b4ee3",
+          "edgeType": "Edge",
+          "source": "62aedececfa746c6898ea537324d8541",
+          "target": "97e49876b05d4bfba6752618ace6924a",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "05516b5324cd4baa9c38758bd8c88254",
+          "edgeType": "Edge",
+          "source": "9ff5016b4dba41148035b666c146168a",
+          "target": "00d0a15c5c334fddaaeab8e28d664331",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "8f8659d94b9e49f6964bf1c94cd183fa",
+          "edgeType": "Branch",
+          "source": "00d0a15c5c334fddaaeab8e28d664331",
+          "target": "550ce06ed8cc40e99efc76715aeed38f",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    var selection = false;\n    if(vaInputs.list_helpfull_results.toString()!=\"show_prev\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"show_next\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"new_search\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"return_groups\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"cancel\")\n        selection = true;\n    return selection;\n})()\n"
+          },
+          "label": "Select item"
+        },
+        {
+          "id": "849036e26ba0415db056a5196df5bbb1",
+          "edgeType": "Branch",
+          "source": "00d0a15c5c334fddaaeab8e28d664331",
+          "target": "9f89373d96a44b59955e41ce6072beb0",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.list_helpfull_results.toString()==\"cancel\")\n        return true;\n    return false;\n})()\n"
+          },
+          "label": "Cancel"
+        },
+        {
+          "id": "1456fac2ee7a4030a572e7560762d1c5",
+          "edgeType": "Branch",
+          "source": "00d0a15c5c334fddaaeab8e28d664331",
+          "target": "1f631c26f494475398a584464f54b216",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.list_helpfull_results.toString()==\"new_search\")\n        return true;\n    return false;\n})()"
+          },
+          "label": "search again"
+        },
+        {
+          "id": "08270b6d72a64501a72039ffcd655a7c",
+          "edgeType": "Branch",
+          "source": "00d0a15c5c334fddaaeab8e28d664331",
+          "target": "1f275279e6724b2ca9544d0bd7eccc24",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.list_helpfull_results.toString()=='show_prev')\n        return true;\n    return false;\n})()\n"
+          },
+          "label": "Show prev"
+        },
+        {
+          "id": "938797ae7e08489284582d63fc9141b5",
+          "edgeType": "Edge",
+          "source": "1f275279e6724b2ca9544d0bd7eccc24",
+          "target": "9ff5016b4dba41148035b666c146168a",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "79c0fb1d41564904b93de59d2bf4396d",
+          "edgeType": "Branch",
+          "source": "00d0a15c5c334fddaaeab8e28d664331",
+          "target": "db7e982628ae471a8b214948d1d5ef8d",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.list_helpfull_results.toString()=='show_next')\n        return true;\n    return false;\n})()\n"
+          },
+          "label": "Show next"
+        },
+        {
+          "id": "9cf649be8fb94af4becfec6bc38008ad",
+          "edgeType": "Edge",
+          "source": "db7e982628ae471a8b214948d1d5ef8d",
+          "target": "9ff5016b4dba41148035b666c146168a",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "6e1f6796f9e14e6187e8532773e47f1b",
+          "edgeType": "Edge",
+          "source": "97e49876b05d4bfba6752618ace6924a",
+          "target": "6f85fa237319419688361502cd592e86",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "cc727e8828a6492696f6552ef045bc84",
+          "edgeType": "Branch",
+          "source": "6f85fa237319419688361502cd592e86",
+          "target": "9f89373d96a44b59955e41ce6072beb0",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.additional_actions.toString()==\"cancel\")\n        return true;\n    return false;\n})()\n"
+          },
+          "label": "Cancel"
+        },
+        {
+          "id": "98f037a856df49579d48fe482e582fac",
+          "edgeType": "Branch",
+          "source": "6f85fa237319419688361502cd592e86",
+          "target": "9ff5016b4dba41148035b666c146168a",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.additional_actions.toString()==\"return_to_list\")\n        return true;\n    return false;\n})()\n"
+          },
+          "label": "return to list"
+        },
+        {
+          "id": "85133b8081e8493e8a7fb9dd70ccaebc",
+          "edgeType": "Branch",
+          "source": "6f85fa237319419688361502cd592e86",
+          "target": "1f631c26f494475398a584464f54b216",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.additional_actions.toString()==\"new_search\")\n        return true;\n    return false;\n})()\n"
+          },
+          "label": "search again"
+        },
+        {
+          "id": "a2fcb4740ec54c92a6a127cc0a42593d",
+          "edgeType": "Branch",
+          "source": "6f85fa237319419688361502cd592e86",
+          "target": "4c4e8850d5ad43e9bed4ca7863d7fea5",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    var selection = false;\n    \n    if(vaInputs.additional_actions.toString()=='mark_helpful')\n        selection = true;\n    return selection;\n})()\n"
+          },
+          "label": "mark helpful"
+        },
+        {
+          "id": "71d9fe24044c49a0b8e3255840d81b3d",
+          "edgeType": "Branch",
+          "source": "6f85fa237319419688361502cd592e86",
+          "target": "8225e3f8e4794b419c5649e473976685",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.additional_actions.toString()=='return_groups')\n        return true;\n    return false;\n})()\n"
+          },
+          "label": "return to groups"
+        },
+        {
+          "id": "6f8689dc9d7547ff8b340e7792a5cb8c",
+          "edgeType": "Branch",
+          "source": "00d0a15c5c334fddaaeab8e28d664331",
+          "target": "8225e3f8e4794b419c5649e473976685",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.list_helpfull_results.toString()=='return_groups')\n        return true;\n    return false;\n})()\n"
+          },
+          "label": "return to groups"
+        },
+        {
+          "id": "14f32b8bd1f545c68cc3847657efb018",
+          "edgeType": "Edge",
+          "source": "4c4e8850d5ad43e9bed4ca7863d7fea5",
+          "target": "5f2e957704c34c9fab4a39bd78ab99c3",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "5c42ebd55a224d2cbdab3f12e31b0cd4",
+          "edgeType": "Edge",
+          "source": "5f2e957704c34c9fab4a39bd78ab99c3",
+          "target": "9f89373d96a44b59955e41ce6072beb0",
+          "sourcePort": "",
+          "targetPort": ""
+        }
+      ]
+    }
+  },
+  "variables": {
+    "0bd59162ac8b426aba9d201dc45e11ee": {
+      "id": "0bd59162ac8b426aba9d201dc45e11ee",
+      "name": "describe_the_issue",
+      "label": "Describe The Issue",
+      "varType": "string",
+      "category": "vaInputs"
+    },
+    "current-user": {
+      "category": "vaInputs",
+      "id": "current-user",
+      "label": "User",
+      "name": "user",
+      "table": "sys_user",
+      "varType": "reference"
+    },
+    "5df045b5d91541e6add0d5636545861e": {
+      "id": "5df045b5d91541e6add0d5636545861e",
+      "value": {
+        "value": "",
+        "mode": "simple"
+      },
+      "name": "result",
+      "label": "result",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "9d37f2cb900a4b489d83c2274ea43afc": {
+      "id": "9d37f2cb900a4b489d83c2274ea43afc",
+      "name": "result_groups",
+      "label": "Result_groups",
+      "varType": "reference",
+      "table": "",
+      "category": "vaInputs"
+    },
+    "b1e80cb4da2b4a57b2cb768937bcc158": {
+      "id": "b1e80cb4da2b4a57b2cb768937bcc158",
+      "name": "list_helpfull_results",
+      "label": "List Helpfull Results",
+      "varType": "reference",
+      "table": "",
+      "category": "vaInputs"
+    },
+    "eb80aa04ce5b4f829ebb3b4d54c2cc68": {
+      "id": "eb80aa04ce5b4f829ebb3b4d54c2cc68",
+      "value": {
+        "value": "",
+        "mode": "simple"
+      },
+      "name": "title",
+      "label": "title",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "054ca25b32444357aaaa1f1f8804ce5f": {
+      "id": "054ca25b32444357aaaa1f1f8804ce5f",
+      "value": {
+        "value": "",
+        "mode": "simple"
+      },
+      "name": "description",
+      "label": "description",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "b0f28db3f3574a3cb79cc98f5866e78e": {
+      "id": "b0f28db3f3574a3cb79cc98f5866e78e",
+      "value": {
+        "value": "",
+        "mode": "simple"
+      },
+      "name": "link",
+      "label": "link",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "346b41d0048942e0806ff496118ab434": {
+      "id": "346b41d0048942e0806ff496118ab434",
+      "name": "additional_actions",
+      "label": "Additional Actions",
+      "varType": "reference",
+      "table": "",
+      "category": "vaInputs"
+    },
+    "fcafdbbef47041f4a989fc096d5ef806": {
+      "id": "fcafdbbef47041f4a989fc096d5ef806",
+      "value": {
+        "mode": "simple",
+        "value": "5"
+      },
+      "name": "limit",
+      "label": "limit",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "b823cf40d9414e2e904115012be2d206": {
+      "id": "b823cf40d9414e2e904115012be2d206",
+      "value": {
+        "mode": "simple",
+        "value": "0"
+      },
+      "name": "index",
+      "label": "index",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "bb38c08ea2544c5291007cb4895916d2": {
+      "id": "bb38c08ea2544c5291007cb4895916d2",
+      "value": {
+        "mode": "simple",
+        "value": "[]"
+      },
+      "name": "groups",
+      "label": "groups",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "7b7f8f6361be4c49b3520abe0468e98c": {
+      "id": "7b7f8f6361be4c49b3520abe0468e98c",
+      "value": {
+        "value": "",
+        "mode": "simple"
+      },
+      "name": "relevance_id",
+      "label": "relevance_id",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "763134271b4e4228b77cd6d6da53024b": {
+      "id": "763134271b4e4228b77cd6d6da53024b",
+      "name": "LiveAgent_application",
+      "value": {
+        "mode": "simple",
+        "value": ""
+      },
+      "varType": "script",
+      "category": "vaVars"
+    }
+  }
+}</graph>
+        <key_phrases>AI search,search,what,AI,help,need help,searching,what is</key_phrases>
+        <live_agent>false</live_agent>
+        <name>AI search</name>
+        <roles/>
+        <sys_class_name>sys_cb_topic</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-08-22 09:12:12</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_id>755e6123db9333004b08a455ca961923</sys_id>
+        <sys_mod_count>42</sys_mod_count>
+        <sys_name>AI search</sys_name>
+        <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
+        <sys_update_name>sys_cb_topic_755e6123db9333004b08a455ca961923</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-08-23 13:58:24</sys_updated_on>
+        <variables/>
+    </sys_cb_topic>
+    <sys_variable_value action="delete_multiple" query="document_key=755e6123db9333004b08a455ca961923"/>
+</record_update>
