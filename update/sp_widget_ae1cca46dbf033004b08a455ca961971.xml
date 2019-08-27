@@ -637,7 +637,7 @@ svg {
 			gr.search_context = "Portal";
 			data.relevance_id = gr.insert();
 			data.source_tables = [];
-        var res = new Search().search(input.q);
+        var res = new Search().search(input.q,search_config_id);
 			if(res)
         res.forEach(function(item) {
             if(item && !item.link1)
@@ -704,14 +704,14 @@ svg {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-04-15 12:54:22</sys_created_on>
         <sys_id>ae1cca46dbf033004b08a455ca961971</sys_id>
-        <sys_mod_count>1058</sys_mod_count>
+        <sys_mod_count>1061</sys_mod_count>
         <sys_name>AI search clone</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sp_widget_ae1cca46dbf033004b08a455ca961971</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-08-26 13:23:51</sys_updated_on>
+        <sys_updated_on>2019-08-27 09:44:36</sys_updated_on>
         <template><![CDATA[<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
   integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
 <div class='container' ng-class="{true: 'loading', false: ''}[c.data.loading==true]">
