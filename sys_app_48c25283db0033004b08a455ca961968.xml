@@ -24,12 +24,12 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-12 09:10:14</sys_created_on>
         <sys_id>48c25283db0033004b08a455ca961968</sys_id>
-        <sys_mod_count>5</sys_mod_count>
+        <sys_mod_count>6</sys_mod_count>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-08-26 10:05:33</sys_updated_on>
+        <sys_updated_on>2019-09-02 10:01:16</sys_updated_on>
         <template/>
         <trackable>true</trackable>
-        <user_role display_value="admin" name="admin">2831a114c611228501d4ea6c309d626d</user_role>
+        <user_role display_value="x_302527_ai_search.user" name="x_302527_ai_search.user">45ea8b5adb1433004b08a455ca9619fd</user_role>
         <vendor/>
         <vendor_prefix/>
         <version>1.0.1</version>

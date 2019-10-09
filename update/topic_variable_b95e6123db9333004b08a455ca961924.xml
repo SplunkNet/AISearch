@@ -39,7 +39,7 @@
         <limit/>
         <mandatory>false</mandatory>
         <max_length>32</max_length>
-        <model display_value="AI search">755e6123db9333004b08a455ca961923</model>
+        <model display_value="Get help with incident">755e6123db9333004b08a455ca961923</model>
         <model_id>755e6123db9333004b08a455ca961923</model_id>
         <model_table/>
         <name>var__m_topic_variable_755e6123db9333004b08a455ca961923</name>

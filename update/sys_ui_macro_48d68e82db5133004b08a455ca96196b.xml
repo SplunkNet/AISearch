@@ -10,17 +10,17 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-05-10 09:03:02</sys_created_on>
         <sys_id>48d68e82db5133004b08a455ca96196b</sys_id>
-        <sys_mod_count>103</sys_mod_count>
+        <sys_mod_count>118</sys_mod_count>
         <sys_name>search_macro</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_ui_macro_48d68e82db5133004b08a455ca96196b</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-08-06 08:15:28</sys_updated_on>
+        <sys_updated_on>2019-10-09 12:12:41</sys_updated_on>
         <xml><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
 	<g2:evaluate var="jvar_formatter_field_name" object="true">
 		var gr = new GlideRecord('x_302527_ai_search_formatter_config');
 		gr.addQuery('table_name',current.sys_class_name);
@@ -35,7 +35,6 @@
 
 		<div id="myApp" ng-app="myApp">
 			<div ng-controller="AISearch">
-				<div class='container'>
 					<!-- input and search button -->
 					<div class="row" ng-if="!is_custom_field">
 						<div class="col-md-offset-2 col-md-8">
@@ -51,16 +50,25 @@
 					</div>
 					<!-- pannel in sidebar -->
 					<div class="row" style="margin-top:10px;">
-						<div class="col-xs-2 filter_nav">
+						<div class="col-md-2 filter_nav">
 							<div class="panel-group" id="accordionMenu" role="tablist" aria-multiselectable="true">
 								<div ng-if="all_results.length >0" class="panel panel-default">
 									<div class="panel-heading" role="tab" id="headingOne">
 										<h4 class="panel-title" ng-click="filterItems()">
 											<a>
-												All <span class="badge">{{ all_results.length}}</span>
+												All <span class="badge pull-right">{{ all_results.length}}</span>
 											</a>
 										</h4>
 									</div>
+								</div>
+								<div ng-if="helpful_results_exist==true" class="panel panel-default">
+								  <div class="panel-heading" role="tab" id="headingOne">
+									<h4 class="panel-title" ng-click="filterItems('helpfull','tag_name','helpfull_result')">
+									  <a>
+										Helpfull Result <span class="pull-right badge">{{helpful_results}}</span>
+									  </a>
+									</h4>
+								  </div>
 								</div>
 								<div ng-repeat='source in  sources' class="panel panel-default">
 									<div class="panel-heading" role="tab" id="headingOne">
@@ -82,11 +90,13 @@
                   <div ng-if="filterObject.table_name==source.sys_class_name"   >
                     <ul class="nav" ng-init="filters = getKeys(filterObject)">
                      <li ng-repeat="filter in filters track by $index" >
-                       <a ng-if="filter!='table_name'" >
+                       <a class="disabled" ng-if="filter!='table_name'" >
                          {{ filter }}
                          <ul class="indent nav" ng-init="filterValue = getFilterData(filterObject,filter)">
                            <li ng-repeat="value in filterValue">
-                             <a ng-click="filterItems(source.sys_class_name,filter,value)">{{value}}</a>
+							   <div ng-init="binded_value = bindHtml(value)">
+                             <a ng-click="filterItems(source.sys_class_name,filter,value)" ng-bind_html="binded_value">{{binded_value}}</a>
+							   </div>
                            </li>
                          </ul>
                        </a>
@@ -112,7 +122,7 @@
 							</div>
 						</div>
 						<!-- regular results goes here  -->
-						<div ng-if=" ! show_google ||  show_google==false" class="col-xs-10 list-group filter_nav">
+						<div ng-if=" ! show_google ||  show_google==false" class="col-md-10 list-group filter_nav">
 							<div ng-if="all_results.length >0" class="panel panel-default">
           <div class="panel-heading" role="tab" id="headingOne">
             <h4 class="panel-title">
@@ -201,13 +211,12 @@
       </ul>
     </nav>
   </div>
-				</div>
 
 			</div>
 		</div>
 
 	<style>
-	.container{position:relative}.spacer{margin:5px}.not_found{padding:50px;color:#696868}.title_not_found{margin:0;font-size:6em;font-weight:100}.content_not_found{padding:10px;width:95%;font-size:1.5em;line-height:1.4}.filter_nav{margin-top:30px}.filter_nav_elem{margin:10px}.loading{opacity:.5}.search-form{border-radius:30px 0 0 30px!important;border:solid 1px #00bf8f}.search-btn{border-radius:0 30px 30px 0!important;background:#00bf8f}.fa-search{color:#fff}.overlay-div{width:100%;height:100%;z-index:1;position:fixed;top:0;opacity:1;display:flex;justify-content:center;align-items:center}.btn-circle{width:40px;height:40px;border:solid 1px gray;border-radius:35px;background:#fff;line-height:1.33}.btn-circle.selected{width:50px;height:50px;border:solid 2px #00bf8f}.indent{text-indent:30px}.badge{margin-right:5px}.badge.active{background-color:#00bf8f!important}
+	.container{position:relative}.spacer{margin:5px}.not_found{padding:50px;color:#696868}.title_not_found{margin:0;font-size:6em;font-weight:100}.content_not_found{padding:10px;width:95%;font-size:1.5em;line-height:1.4}.filter_nav{margin-top:30px}.filter_nav_elem{margin:10px}.loading{opacity:.5}.search-form{border-radius:30px 0 0 30px!important;border:solid 1px #00bf8f}.search-btn{border-radius:0 30px 30px 0!important;background:#00bf8f}.fa-search{color:#fff}.overlay-div{width:100%;height:100%;z-index:1;position:fixed;top:0;opacity:1;display:flex;justify-content:center;align-items:center}.btn-circle{width:40px;height:40px;border:solid 1px gray;border-radius:35px;background:#fff;line-height:1.33}.btn-circle.selected{width:50px;height:50px;border:solid 2px #00bf8f}.indent{text-indent:30px}.badge{margin-right:5px}.badge.active{background-color:#00bf8f!important}.panel-body{padding:0px!important}.disabled{color: gray;}
 	</style>
 </j:jelly>]]></xml>
     </sys_ui_macro>

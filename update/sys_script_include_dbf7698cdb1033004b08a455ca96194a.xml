@@ -208,8 +208,11 @@ SearchUtils.prototype = {
                 result.status = 'fail';
                 if (response.error.message == 'Bad Request')
                     result.message = 'Key is not set or invalid';
-                if (response.error.message == 'Invalid Value')
+                else if (response.error.message == 'Invalid Value')
                     result.message = 'context is not set or invalid';
+				else
+					result.message = response.error.message;
+				
             } else {
                 result.status = 'success';
                 result.response = response;
@@ -321,13 +324,13 @@ SearchUtils.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-03-15 08:37:48</sys_created_on>
         <sys_id>dbf7698cdb1033004b08a455ca96194a</sys_id>
-        <sys_mod_count>139</sys_mod_count>
+        <sys_mod_count>140</sys_mod_count>
         <sys_name>SearchUtils</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_dbf7698cdb1033004b08a455ca96194a</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-08-21 10:30:59</sys_updated_on>
+        <sys_updated_on>2019-10-09 14:03:15</sys_updated_on>
     </sys_script_include>
 </record_update>

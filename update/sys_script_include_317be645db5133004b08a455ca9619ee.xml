@@ -69,6 +69,33 @@ SearchHelper.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
         
         return JSON.stringify(google_res);
     },
+	intelligence : function(){
+		var sys_id = this.getParameter('sysparm_id');
+		var table_name = this.getParameter('sysparm_table');
+		var search_config_id = this.getParameter('sysparm_config_id');
+		var result;
+		if(table_name && sys_id){
+		var table_record = new GlideRecord('sys_db_object');
+		table_record.addQuery('label',table_name);
+		table_record.setLimit(1);
+		table_record.query();
+		if(table_record.next()){
+			var intelegence = new GlideRecord('x_302527_ai_search_intelegence');
+			intelegence.addQuery('table_name',table_record.sys_id);
+			intelegence.setLimit(1);
+			intelegence.query();
+			if(intelegence.next()){
+				//we have a similarity solution
+				var rec = new GlideRecord(table_name);
+				rec.get(sys_id);
+				var res = searchUtils.searchIntelligence(rec,intelegence.ml_solution.solution_name,search_config_id);
+				if(res)
+					result = JSON.stringify(res);
+			}
+		}
+		return result;
+	}
+	},
     type: 'SearchHelper'
 });
 ]]></script>
@@ -76,13 +103,13 @@ SearchHelper.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-05-07 09:10:19</sys_created_on>
         <sys_id>317be645db5133004b08a455ca9619ee</sys_id>
-        <sys_mod_count>26</sys_mod_count>
+        <sys_mod_count>27</sys_mod_count>
         <sys_name>SearchHelper</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_script_include_317be645db5133004b08a455ca9619ee</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-07-19 08:00:03</sys_updated_on>
+        <sys_updated_on>2019-10-09 14:41:31</sys_updated_on>
     </sys_script_include>
 </record_update>

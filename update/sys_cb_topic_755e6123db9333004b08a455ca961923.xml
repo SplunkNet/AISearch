@@ -110,13 +110,13 @@
           "variableId": "9d37f2cb900a4b489d83c2274ea43afc",
           "id": "8225e3f8e4794b419c5649e473976685",
           "mode": "external",
-          "script": "(function execute() {\n \n    var options = [];    \n    var results = JSON.parse(vaVars.result);\n    \n    var res_by_tag = new GlideUtils().groupBy(results,'tag_name');\n    if(res_by_tag.hasOwnProperty('helpfull_result')){\n        var obj = 'tag_name,helpfull_result';\n        options.push({'value':obj,'label':res_by_tag.helpfull_result.length+' helpfull results'});\n    }\n        \n    var groups = new GlideUtils().groupBy(results,'sys_class_name');\n    for(key in groups){\n        var obj = 'sys_class_name,'+key;\n        var rec = new GlideRecord('sys_db_object');\n        rec.addQuery('name',key);\n        rec.setLimit(1);\n        rec.query();\n        if(rec.next())\n        options.push({ 'value': obj, 'label': groups[key].length+' from '+rec.label });\n    }\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    \n    return options;\n  \n})()\n",
+          "script": "(function execute() {\n \n    var options = [];    \n    var results = JSON.parse(vaVars.result);\n    \n    var res_by_tag = new GlideUtils().groupBy(results,'tag_name');\n    if(res_by_tag.hasOwnProperty('helpfull_result')){\n        var obj = 'tag_name,helpfull_result';\n        options.push({'value':obj,'label':res_by_tag.helpfull_result.length+' helpfull results'});\n    }\n        \n    var groups = new GlideUtils().groupBy(results,'sys_class_name');\n    for(key in groups){\n        var obj = 'sys_class_name,'+key;\n        var rec = new GlideRecord('sys_db_object');\n        rec.addQuery('name',key);\n        rec.setLimit(1);\n        rec.query();\n        if(rec.next())\n        options.push({ 'value': obj, 'label': groups[key].length+' from '+rec.label });\n    }\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'connect_live_agent', 'label': gs.getMessage('Connect to live agent')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    \n    return options;\n  \n})()\n",
           "noRecordsResponseMsg": {
             "value": "Problem occurred",
             "mode": "simple"
           },
           "condition": {
-            "value": "(function execute() {\n \n    var options = [];    \n    var results = JSON.parse(vaVars.result);\n    \n    var res_by_tag = new GlideUtils().groupBy(results,'tag_name');\n    if(res_by_tag.hasOwnProperty('helpfull_result')){\n        var obj = 'tag_name,helpfull_result';\n        options.push({'value':obj,'label':res_by_tag.helpfull_result.length+' helpfull results'});\n    }\n        \n    var groups = new GlideUtils().groupBy(results,'sys_class_name');\n    for(key in groups){\n        var obj = 'sys_class_name,'+key;\n        var rec = new GlideRecord('sys_db_object');\n        rec.addQuery('name',key);\n        rec.setLimit(1);\n        rec.query();\n        if(rec.next())\n        options.push({ 'value': obj, 'label': groups[key].length+' from '+rec.label });\n    }\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    \n    return options;\n  \n})()\n",
+            "value": "(function execute() {\n \n    var options = [];    \n    var results = JSON.parse(vaVars.result);\n    \n    var res_by_tag = new GlideUtils().groupBy(results,'tag_name');\n    if(res_by_tag.hasOwnProperty('helpfull_result')){\n        var obj = 'tag_name,helpfull_result';\n        options.push({'value':obj,'label':res_by_tag.helpfull_result.length+' helpfull results'});\n    }\n        \n    var groups = new GlideUtils().groupBy(results,'sys_class_name');\n    for(key in groups){\n        var obj = 'sys_class_name,'+key;\n        var rec = new GlideRecord('sys_db_object');\n        rec.addQuery('name',key);\n        rec.setLimit(1);\n        rec.query();\n        if(rec.next())\n        options.push({ 'value': obj, 'label': groups[key].length+' from '+rec.label });\n    }\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'connect_live_agent', 'label': gs.getMessage('Connect to live agent')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    \n    return options;\n  \n})()\n",
             "mode": "external_script"
           }
         },
@@ -152,13 +152,13 @@
           "variableId": "b1e80cb4da2b4a57b2cb768937bcc158",
           "id": "9ff5016b4dba41148035b666c146168a",
           "mode": "external",
-          "script": "(function execute() {\n    var options = []; \n    var all_results = JSON.parse(vaVars.result);\n    var group_by = vaInputs.result_groups.toString().split(',')[0];\n    var group_by_value = vaInputs.result_groups.toString().split(',')[1];\n    var results = new GlideUtils().groupBy(all_results,group_by);\n    results = results[group_by_value];\n\n    var stop = 0;\n    var limit = parseInt(vaVars.limit);\n    var index =  parseInt(vaVars.index);\n    if(results.length&lt;limit)\n        stop = results.length;\n    else\n        stop = index+limit;\n\n    for(var i=index;i&lt;stop;i++){\n        var item = results[i];\n        if(item &amp;&amp; item.display_title){\n            var display_value = item.display_title.split('&lt;b&gt;').join('');\n            display_value = display_value.split('&lt;/b&gt;').join('');\n            var value = item.sys_id+','+item.sys_class_name;\n            options.push({ 'value': value, 'label': display_value });\n        }\n\n    } \n\n    if (index &gt;= limit) {\n        options.push({ 'value': 'show_prev', 'label': gs.getMessage('Show previous')});    \n    }\n\n    if (index+limit &lt; results.length) {\n        options.push({ 'value': 'show_next', 'label': gs.getMessage('Show more')});    \n    }\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options;\n\n})()\n",
+          "script": "(function execute() {\n    var options = []; \n    var all_results = JSON.parse(vaVars.result);\n    var group_by = vaInputs.result_groups.toString().split(',')[0];\n    var group_by_value = vaInputs.result_groups.toString().split(',')[1];\n    var results = new GlideUtils().groupBy(all_results,group_by);\n    results = results[group_by_value];\n\n    var stop = 0;\n    var limit = parseInt(vaVars.limit);\n    var index =  parseInt(vaVars.index);\n    if(results.length&lt;limit)\n        stop = results.length;\n    else\n        stop = index+limit;\n\n    for(var i=index;i&lt;stop;i++){\n        var item = results[i];\n        if(item &amp;&amp; item.display_title){\n            var display_value = item.display_title.split('&lt;b&gt;').join('');\n            display_value = display_value.split('&lt;/b&gt;').join('');\n            var value = item.sys_id+','+item.sys_class_name;\n            options.push({ 'value': value, 'label': display_value });\n        }\n\n    } \n\n    if (index &gt;= limit) {\n        options.push({ 'value': 'show_prev', 'label': gs.getMessage('Show previous')});    \n    }\n\n    if (index+limit &lt; results.length) {\n        options.push({ 'value': 'show_next', 'label': gs.getMessage('Show more')});    \n    }\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'connect_live_agent', 'label': gs.getMessage('Connect to live agent')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options;\n\n})()\n",
           "noRecordsResponseMsg": {
             "value": "problem occurred",
             "mode": "simple"
           },
           "condition": {
-            "value": "(function execute() {\n    var options = []; \n    var all_results = JSON.parse(vaVars.result);\n    var group_by = vaInputs.result_groups.toString().split(',')[0];\n    var group_by_value = vaInputs.result_groups.toString().split(',')[1];\n    var results = new GlideUtils().groupBy(all_results,group_by);\n    results = results[group_by_value];\n\n    var stop = 0;\n    var limit = parseInt(vaVars.limit);\n    var index =  parseInt(vaVars.index);\n    if(results.length&lt;limit)\n        stop = results.length;\n    else\n        stop = index+limit;\n\n    for(var i=index;i&lt;stop;i++){\n        var item = results[i];\n        if(item &amp;&amp; item.display_title){\n            var display_value = item.display_title.split('&lt;b&gt;').join('');\n            display_value = display_value.split('&lt;/b&gt;').join('');\n            var value = item.sys_id+','+item.sys_class_name;\n            options.push({ 'value': value, 'label': display_value });\n        }\n\n    } \n\n    if (index &gt;= limit) {\n        options.push({ 'value': 'show_prev', 'label': gs.getMessage('Show previous')});    \n    }\n\n    if (index+limit &lt; results.length) {\n        options.push({ 'value': 'show_next', 'label': gs.getMessage('Show more')});    \n    }\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options;\n\n})()\n",
+            "value": "(function execute() {\n    var options = []; \n    var all_results = JSON.parse(vaVars.result);\n    var group_by = vaInputs.result_groups.toString().split(',')[0];\n    var group_by_value = vaInputs.result_groups.toString().split(',')[1];\n    var results = new GlideUtils().groupBy(all_results,group_by);\n    results = results[group_by_value];\n\n    var stop = 0;\n    var limit = parseInt(vaVars.limit);\n    var index =  parseInt(vaVars.index);\n    if(results.length&lt;limit)\n        stop = results.length;\n    else\n        stop = index+limit;\n\n    for(var i=index;i&lt;stop;i++){\n        var item = results[i];\n        if(item &amp;&amp; item.display_title){\n            var display_value = item.display_title.split('&lt;b&gt;').join('');\n            display_value = display_value.split('&lt;/b&gt;').join('');\n            var value = item.sys_id+','+item.sys_class_name;\n            options.push({ 'value': value, 'label': display_value });\n        }\n\n    } \n\n    if (index &gt;= limit) {\n        options.push({ 'value': 'show_prev', 'label': gs.getMessage('Show previous')});    \n    }\n\n    if (index+limit &lt; results.length) {\n        options.push({ 'value': 'show_next', 'label': gs.getMessage('Show more')});    \n    }\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'connect_live_agent', 'label': gs.getMessage('Connect to live agent')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options;\n\n})()\n",
             "mode": "external_script"
           }
         },
@@ -166,7 +166,7 @@
           "id": "62aedececfa746c6898ea537324d8541",
           "stepType": "HtmlOutput",
           "name": "Display helpful result",
-          "value": "&lt;html&gt;\n&lt;link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css\"&gt;\n&amp;lt;script&amp;gt;&amp;lt;/script&amp;gt;\n\n&lt;body&gt;\n\n    &lt;div class=\"row\"&gt;\n        &lt;div class=\"col s12 m6\"&gt;\n            &lt;div class=\"card\"&gt;\n                &lt;div class=\"card-content\"&gt;\n                    &lt;span class=\"card-title\"&gt;{{vaVars.title}}&lt;/span&gt;\n                    &lt;p&gt;{{vaVars.description}}&lt;/p&gt;\n                &lt;/div&gt;\n                &lt;div class=\"card-action\"&gt;\n                    &lt;a href=\"{{vaVars.link}}\"&gt;Open&lt;/a&gt;\n                &lt;/div&gt;\n            &lt;/div&gt;\n        &lt;/div&gt;\n    &lt;/div&gt;\n&lt;/body&gt;\n\n&lt;/html&gt;",
+          "value": "&lt;html&gt;\n&lt;link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css\"&gt;\n\n&lt;body&gt;\n\n    &lt;div class=\"row\"&gt;\n        &lt;div class=\"col s12 m6\"&gt;\n            &lt;div class=\"card\"&gt;\n                &lt;div class=\"card-content\"&gt;\n                    &lt;span class=\"card-title\"&gt;{{vaVars.title}}&lt;/span&gt;\n                    &lt;p&gt;{{vaVars.description}}&lt;/p&gt;\n                &lt;/div&gt;\n                &lt;div class=\"card-action\"&gt;\n                    &lt;a href=\"{{vaVars.link}}\"&gt;Open&lt;/a&gt;\n                &lt;/div&gt;\n            &lt;/div&gt;\n        &lt;/div&gt;\n    &lt;/div&gt;\n&lt;/body&gt;\n\n&lt;/html&gt;",
           "height": "0",
           "width": "0",
           "applicability": {
@@ -211,13 +211,13 @@
           "variableId": "346b41d0048942e0806ff496118ab434",
           "id": "97e49876b05d4bfba6752618ace6924a",
           "mode": "external",
-          "script": "(function execute() {\n   var options = [];\n    \n    options.push({ 'value': 'mark_helpful', 'label': gs.getMessage('mark this result as helpful')});\n    options.push({ 'value': 'return_to_list', 'label': gs.getMessage('Return to the results list')});\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options; \n})()\n",
+          "script": "(function execute() {\n   var options = [];\n    \n    options.push({ 'value': 'mark_helpful', 'label': gs.getMessage('mark this result as helpful')});\n    options.push({ 'value': 'return_to_list', 'label': gs.getMessage('Return to the results list')});\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'connect_live_agent', 'label': gs.getMessage('Connect to live agent')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options; \n})()\n",
           "noRecordsResponseMsg": {
             "value": "Problem occurred",
             "mode": "simple"
           },
           "condition": {
-            "value": "(function execute() {\n   var options = [];\n    \n    options.push({ 'value': 'mark_helpful', 'label': gs.getMessage('mark this result as helpful')});\n    options.push({ 'value': 'return_to_list', 'label': gs.getMessage('Return to the results list')});\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options; \n})()\n",
+            "value": "(function execute() {\n   var options = [];\n    \n    options.push({ 'value': 'mark_helpful', 'label': gs.getMessage('mark this result as helpful')});\n    options.push({ 'value': 'return_to_list', 'label': gs.getMessage('Return to the results list')});\n    options.push({ 'value': 'return_groups', 'label': gs.getMessage('Return to groups')});\n    options.push({ 'value': 'new_search', 'label': gs.getMessage('Try a different search')});\n    options.push({ 'value': 'connect_live_agent', 'label': gs.getMessage('Connect to live agent')});\n    options.push({ 'value': 'cancel', 'label': gs.getMessage('I\\'m done')});\n    return options; \n})()\n",
             "mode": "external_script"
           }
         },
@@ -273,6 +273,16 @@
             "value": "",
             "mode": "query"
           }
+        },
+        "e2cbd1ba66d1417ab1086263e32d36af": {
+          "id": "e2cbd1ba66d1417ab1086263e32d36af",
+          "name": "connect ",
+          "script": "(function execute() {\n    if(vaSystem.isLiveAgentAvailable()) { \n           vaSystem.connectToAgent()\n        }\n})()\n",
+          "stepType": "ScriptAction",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
         }
       },
       "edges": [
@@ -298,7 +308,7 @@
           "targetPort": "",
           "expression": {
             "mode": "script",
-            "value": "(function execute() {\n    if(vaInputs.result_groups.toString()!='new_search' &amp;&amp; vaInputs.result_groups.toString()!='cancel')\n        return true;\n    return false;\n\n})()\n"
+            "value": "(function execute() {\n    if(vaInputs.result_groups.toString()!='new_search' &amp;&amp; vaInputs.result_groups.toString()!='cancel' &amp;&amp; vaInputs.result_groups.toString()!='connect_live_agent')\n        return true;\n    return false;\n\n})()\n"
           },
           "label": "select group"
         },
@@ -375,7 +385,7 @@
           "targetPort": "",
           "expression": {
             "mode": "script",
-            "value": "(function execute() {\n    var selection = false;\n    if(vaInputs.list_helpfull_results.toString()!=\"show_prev\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"show_next\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"new_search\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"return_groups\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"cancel\")\n        selection = true;\n    return selection;\n})()\n"
+            "value": "(function execute() {\n    var selection = false;\n    if(vaInputs.list_helpfull_results.toString()!=\"show_prev\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"show_next\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"new_search\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"return_groups\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"connect_live_agent\"&amp;&amp;\n    vaInputs.list_helpfull_results.toString()!=\"cancel\")\n    \n        selection = true;\n    return selection;\n})()\n"
           },
           "label": "Select item"
         },
@@ -548,6 +558,53 @@
           "target": "9f89373d96a44b59955e41ce6072beb0",
           "sourcePort": "",
           "targetPort": ""
+        },
+        {
+          "id": "f0284571e9004037a0b856688090f9c1",
+          "edgeType": "Branch",
+          "source": "ec210e40737c41a1bc5da44818be3d44",
+          "target": "e2cbd1ba66d1417ab1086263e32d36af",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n   if(vaInputs.result_groups.toString()=='connect_live_agent' )\n        return true;\n    return false;\n    \n})()\n"
+          },
+          "label": "Connect to live agent"
+        },
+        {
+          "id": "8dbbc0ec5b9a44d694ed3ca3b8476a7f",
+          "edgeType": "Edge",
+          "source": "e2cbd1ba66d1417ab1086263e32d36af",
+          "target": "9f89373d96a44b59955e41ce6072beb0",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "f3d9a473852047868117d78f9c7df386",
+          "edgeType": "Branch",
+          "source": "6f85fa237319419688361502cd592e86",
+          "target": "e2cbd1ba66d1417ab1086263e32d36af",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.additional_actions.toString()==\"connect_live_agent\"){\n        return true;\n    }\n    return false;\n})()\n"
+          },
+          "label": "Connect to live agent"
+        },
+        {
+          "id": "9ca7cae4ef5a49f18d47ca2dbe53a2a9",
+          "edgeType": "Branch",
+          "source": "00d0a15c5c334fddaaeab8e28d664331",
+          "target": "e2cbd1ba66d1417ab1086263e32d36af",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    if(vaInputs.list_helpfull_results.toString()==\"connect_live_agent\"){\n        return true;\n    }\n    return false;\n\n})()\n"
+          },
+          "label": "Connect to live agent"
         }
       ]
     }
@@ -692,23 +749,23 @@
     }
   }
 }</graph>
-        <key_phrases>AI search,search,what,AI,help,need help,searching,what is</key_phrases>
+        <key_phrases>Get help with incident,search,what,AI,help,need help,searching,what is</key_phrases>
         <live_agent>false</live_agent>
-        <name>AI search</name>
+        <name>Get help with incident</name>
         <roles/>
         <sys_class_name>sys_cb_topic</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-08-22 09:12:12</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_id>755e6123db9333004b08a455ca961923</sys_id>
-        <sys_mod_count>42</sys_mod_count>
-        <sys_name>AI search</sys_name>
+        <sys_mod_count>55</sys_mod_count>
+        <sys_name>Get help with incident</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_cb_topic_755e6123db9333004b08a455ca961923</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-08-23 13:58:24</sys_updated_on>
+        <sys_updated_on>2019-10-01 12:52:03</sys_updated_on>
         <variables/>
     </sys_cb_topic>
     <sys_variable_value action="delete_multiple" query="document_key=755e6123db9333004b08a455ca961923"/>

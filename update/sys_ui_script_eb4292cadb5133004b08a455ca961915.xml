@@ -6,10 +6,12 @@
         <name>x_302527_ai_search.search_macro_client</name>
         <script><![CDATA[var myApp = angular.module('myApp', []);
 myApp.controller('AISearch', ['$scope', '$timeout','$sce',function ($scope,$timeout , $sce) {
+	console.log('amine App started');
     var item_per_page = 5;
     $scope.table_filtered_by = [];
 	$scope.ui_actions = [];
-	
+	if(!g_form.isNewRecord())
+		loadIntelligence();
     customInput();
 	
     $scope.search = function () {
@@ -28,18 +30,26 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce',function ($scope,$time
             $scope.$apply(function () {
                 res = JSON.parse(res);
                 $scope.g_res = res.google_res;
-                $scope.g_res.items.forEach(function (item) {
-                    item.htmlTitle = $sce.trustAsHtml(item.htmlTitle);
-                    item.htmlSnippet = $sce.trustAsHtml(item.htmlSnippet);
-                });
+				if($scope.g_res)
+					$scope.g_res.items.forEach(function (item) {
+						item.htmlTitle = $sce.trustAsHtml(item.htmlTitle);
+						item.htmlSnippet = $sce.trustAsHtml(item.htmlSnippet);
+					});
                 $scope.g_page = 1;
                 $scope.table_filtered_by = res.table_filtered_by;
 				$scope.ui_actions = res.ui_actions;
                 $scope.all_results = res.res;
                 $scope.calculatePages();
+				$scope.sort();
                 $scope.sources = [];
+				$scope.helpful_results = 0;
+				$scope.helpful_results_exist = false;
                 $scope.all_results.forEach(function (item) {
-                    //create here a display value short becaus rs is not showing
+					if(item.tag_name == 'helpfull_result'){
+						$scope.helpful_results++;
+						$scope.helpful_results_exist = true;
+					}
+                    //create here a display value short because rs is not showing
                     item.display_title = $sce.trustAsHtml(item.display_title);
                     item.display_description = $sce.trustAsHtml(item.display_description);
                     var el = document.createElement('div');
@@ -132,6 +142,16 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce',function ($scope,$time
             if (column) {
                 filtered = [];
                 $scope.all_results.forEach(function (item) {
+					if(source_name=="helpfull"){
+						if(item && item[column+''])
+											if ($scope.str_contains(item[column + ''], value))
+												filtered.push(item);
+					}
+					else if(source_name=="intelligence"){
+						if(item && item[column+''])
+											if ($scope.str_contains(item[column + ''], value))
+												filtered.push(item);
+					}else
                     if (item.sys_class_name == source_name && $scope.str_contains(item[column + ''], value))
                         filtered.push(item);
                 });
@@ -277,7 +297,7 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce',function ($scope,$time
 	   var element = g_form.getElement(field_name);
 	   
 	   if(element == null){
-		   
+		   $scope.is_custom_field = false;
 	   }else{
 		   if(field_name){
 			   notifyMe($scope,function(){return element.value},function(new_value,old_value){
@@ -294,6 +314,20 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce',function ($scope,$time
 	   }  
        
    }
+	function loadIntelligence(){
+		var sys_id = g_form.getUniqueValue();
+		var table_name = g_form.getTableName();
+		var ga = new GlideAjax('SearchHelper');
+        ga.addParam('sysparm_name', 'intelligence');
+        ga.addParam('sysparm_id', sys_id);
+		ga.addParam('sysparm_table', table_name);
+		ga.addParam('sysparm_config_id', '4b443d48dbe133004b08a455ca9619ca');
+        ga.getXMLAnswer(function (res) {
+            res = JSON.parse(res);
+			console.log(res);
+			return res;
+        });
+	}
 	 function notifyMe(scope, expr, callbackFn) {
     var oldValue = scope.$eval(expr);
     setInterval(function() {
@@ -348,6 +382,12 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce',function ($scope,$time
             });
         return status;
     };
+	$scope.bindHtml = function(value){
+		console.log('amine 0 '+value);
+		var res = $sce.trustAsHtml(value);
+		console.log('amine '+res);
+		return res;
+	};
     $scope.getKeys = function (obj) {
         return Object.keys(obj);
     };
@@ -473,14 +513,14 @@ myApp.controller('AISearch', ['$scope', '$timeout','$sce',function ($scope,$time
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2019-05-10 09:54:44</sys_created_on>
         <sys_id>eb4292cadb5133004b08a455ca961915</sys_id>
-        <sys_mod_count>148</sys_mod_count>
+        <sys_mod_count>165</sys_mod_count>
         <sys_name>x_302527_ai_search.search_macro_client</sys_name>
         <sys_package display_value="AI Search" source="x_302527_ai_search">48c25283db0033004b08a455ca961968</sys_package>
         <sys_policy/>
         <sys_scope display_value="AI Search">48c25283db0033004b08a455ca961968</sys_scope>
         <sys_update_name>sys_ui_script_eb4292cadb5133004b08a455ca961915</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2019-07-26 13:42:48</sys_updated_on>
+        <sys_updated_on>2019-10-09 14:43:45</sys_updated_on>
         <ui_type>10</ui_type>
         <use_scoped_format>false</use_scoped_format>
     </sys_ui_script>
