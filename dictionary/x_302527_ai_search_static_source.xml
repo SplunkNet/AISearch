@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><database>
-    <element extends="x_302527_ai_search_source" label="static source" max_length="40" name="x_302527_ai_search_static_source" type="collection">
-        <element label="Api_key" max_length="40" name="api_key" type="string"/>
-        <element label="Password" max_length="40" name="password" type="password"/>
-        <element label="Username" max_length="40" name="username" type="string"/>
-        <element attributes="edge_encryption_enabled=true" label="Related words" mandatory="true" max_length="40" name="u_related_words" type="string"/>
-        <element attributes="edge_encryption_enabled=true" label="URL" mandatory="true" max_length="1024" name="u_url" type="url"/>
-    </element>
-</database>

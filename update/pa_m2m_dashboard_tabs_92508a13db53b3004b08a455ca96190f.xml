@@ -2,7 +2,7 @@
     <pa_m2m_dashboard_tabs action="INSERT_OR_UPDATE">
         <dashboard display_value="My Homepage 2">8e500a13db53b3004b08a455ca9619b8</dashboard>
         <home>false</home>
-        <homepage display_value="AI Search Homepage">5a388abcdb9133004b08a455ca961991</homepage>
+        <homepage display_value="">5a388abcdb9133004b08a455ca961991</homepage>
         <order>1</order>
         <sys_class_name>pa_m2m_dashboard_tabs</sys_class_name>
         <sys_created_by>admin</sys_created_by>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_ui_policy">
     <sys_ui_policy action="INSERT_OR_UPDATE">
         <active>true</active>
-        <conditions table="x_302527_ai_search_table_source">u_frequencyIN1,100,200^EQ<item endquery="false" field="u_frequency" goto="false" newquery="false" operator="IN" or="false" value="1,100,200"/>
-            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        <conditions table="x_302527_ai_search_table_source">u_frequencyIN1,100,200^EQ<item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
         </conditions>
         <description/>
         <global>true</global>

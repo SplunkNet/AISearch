@@ -3,19 +3,10 @@
         <element attributes="edge_encryption_enabled=true,no_sort=true,slushbucket_ref_no_expand=true" label="Columns" max_length="4000" name="columns" reference="sys_dictionary" reference_qual="javascript:new ColumnsOfTable().getColumns()" type="glide_list" use_reference_qualifier="advanced"/>
         <element attributes="edge_encryption_enabled=true" dependent="u_table_name" dependent_on_field="u_table_name" label="Description field" mandatory="true" max_length="80" name="description_field" type="field_name" use_dependent_field="true"/>
         <element attributes="edge_encryption_enabled=true,no_sort=true,slushbucket_ref_no_expand=true" label="Filtered by" max_length="1024" name="filtered_by" reference="sys_dictionary" reference_qual="javascript:new ColumnsOfTable().getColumns()" type="glide_list" use_reference_qualifier="advanced"/>
-        <element calculation="(function calculatedFieldValue(current) {&#13;&#10;&#13;&#10;&#9;// Add your code here&#13;&#10;&#9;return '';  // return the calculated value&#13;&#10;&#13;&#10;})(current);" dependent="u_table_name" dependent_on_field="u_table_name" label="Query String" max_length="4000" name="query_string" type="conditions" use_dependent_field="true"/>
+        <element dependent="u_table_name" dependent_on_field="u_table_name" label="Query String" max_length="4000" name="query_string" type="conditions" use_dependent_field="true"/>
         <element attributes="edge_encryption_enabled=true" dependent="u_table_name" dependent_on_field="u_table_name" label="Title field" mandatory="true" max_length="80" name="title_field" type="field_name" use_dependent_field="true"/>
         <element attributes="edge_encryption_enabled=true,no_sort=true,slushbucket_ref_no_expand=true" choice="1" hint="if not set all columns will be used to search ." label="Columns" max_length="1024" name="u_columns" reference="sys_dictionary" reference_qual="javascript:new ColumnsOfTable().getColumns()" type="glide_list" use_reference_qualifier="advanced">
             <choice/>
-        </element>
-        <element attributes="edge_encryption_enabled=true" choice="1" label="Frequency" mandatory="true" max_length="40" name="u_frequency" type="integer">
-            <choice>
-                <element inactive_on_update="false" label="Once" sequence="0" value="1"/>
-                <element inactive_on_update="false" label="Weekly" sequence="1" value="7"/>
-                <element inactive_on_update="false" label="Monthly" sequence="2" value="30"/>
-                <element inactive_on_update="false" label="Monthly at" sequence="3" value="100"/>
-                <element inactive_on_update="false" label="Weekly at" sequence="4" value="200"/>
-            </choice>
         </element>
         <element attributes="base_start=true,edge_encryption_enabled=true" label="Table Name" mandatory="true" max_length="80" name="u_table_name" type="table_name"/>
     </element>

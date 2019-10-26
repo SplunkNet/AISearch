@@ -3,7 +3,7 @@
         <sys_ui_list_element action="INSERT_OR_UPDATE">
             <average_value>false</average_value>
             <element>name</element>
-            <list_id display_value="x_302527_ai_search_action" element="NULL" name="x_302527_ai_search_action" parent="NULL" relationship="NULL" sys_domain="global" view="d84b1371dd0323007850f2ee37a03972">e8f035d4db7233004b08a455ca961920</list_id>
+            <list_id display_value="x_302527_ai_search_action" element="NULL" name="x_302527_ai_search_action" parent="NULL" relationship="NULL" sys_domain="global" view="85df0262e131330078502406b633339e">e8f035d4db7233004b08a455ca961920</list_id>
             <max_value>false</max_value>
             <min_value>false</min_value>
             <position>0</position>
@@ -40,7 +40,7 @@
             <sys_updated_by>admin</sys_updated_by>
             <sys_updated_on>2019-07-18 10:31:56</sys_updated_on>
             <sys_user/>
-            <view display_value="Reference List" name="sys_ref_list">d84b1371dd0323007850f2ee37a03972</view>
+            <view display_value="Reference List" name="sys_ref_list">85df0262e131330078502406b633339e</view>
             <view_name/>
         </sys_ui_list>
     </sys_ui_list>

@@ -2,7 +2,7 @@
     <element label="relevance report" max_length="40" name="x_302527_ai_search_relevance_report" type="collection">
         <element label="link" max_length="1024" name="link" type="url"/>
         <element label="query" max_length="40" name="query" type="string"/>
-        <element calculation="(function calculatedFieldValue(current) {&#13;&#10;&#9;var value=false;&#13;&#10;&#9;if(current.link &amp;&amp; current.link!=&quot;&quot;)&#13;&#10;&#9;&#9;value = true;&#13;&#10;&#9;else if(current.solution &amp;&amp; current.solution_table_name &amp;&amp; current.solution_table_name)&#13;&#10;&#9;&#9;value = true;&#13;&#10;&#9;return value;  &#13;&#10;&#13;&#10;})(current);" label="Resolved" max_length="40" name="resolved" type="boolean"/>
+        <element calculation="(function calculatedFieldValue(current) {&#10;&#9;var value=false;&#10;&#9;if(current.link &amp;&amp; current.link!=&quot;&quot;)&#10;&#9;&#9;value = true;&#10;&#9;else if(current.solution &amp;&amp; current.solution_table_name &amp;&amp; current.solution_table_name)&#10;&#9;&#9;value = true;&#10;&#9;return value;  &#10;&#10;})(current);" label="Resolved" max_length="40" name="resolved" type="boolean"/>
         <element label="Search context" max_length="40" name="search_context" type="string"/>
         <element dependent="solution_table_name" dependent_on_field="solution_table_name" label="Solution" max_length="32" name="solution" type="document_id" use_dependent_field="true"/>
         <element label="Solution table name" max_length="40" name="solution_table_name" type="string"/>
